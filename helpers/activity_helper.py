@@ -2,6 +2,7 @@
 # Licensed under the MIT License.
 
 from datetime import datetime
+from time import timezone
 
 from botbuilder.schema import (
     Activity,
@@ -14,7 +15,7 @@ from botbuilder.schema import (
 def create_activity_reply(activity: Activity, text: str = None, locale: str = None):
     return Activity(
         type=ActivityTypes.message,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         from_property=ChannelAccount(
             id=getattr(activity.recipient, "id", None),
             name=getattr(activity.recipient, "name", None),

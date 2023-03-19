@@ -1,15 +1,15 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
+import array
 
 
-class BookingDetails:
+class BookDetail:
     def __init__(
             self,
             titleorisbn: str = None,
             index: str = None,
-            unsupported_airports=None,
+            book: array = None
     ):
-        if unsupported_airports is None:
-            unsupported_airports = []
         self.titleorisbn = titleorisbn
         self.index = index
+        self.book = book

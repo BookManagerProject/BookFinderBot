@@ -4,3 +4,6 @@ botbuilder-ai>=4.14.0
 datatypes-date-time>=1.0.0.a2
 BeautifulSoup4
 validators
+azure-cognitiveservices-vision-computervision==0.9.0
+azure-cognitiveservices-speech
+pydub

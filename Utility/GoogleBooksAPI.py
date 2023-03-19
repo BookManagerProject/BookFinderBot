@@ -18,6 +18,9 @@ class GoogleBooksAPI:
         self.results = self._parse_response(response)
         return self._parse_response(response)
 
+    def countBookFinded(self):
+        return len(self.results)
+
     def getBookFinded(self, index):
         try:
             indexint = int(index)

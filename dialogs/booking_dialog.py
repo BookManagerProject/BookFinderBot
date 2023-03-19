@@ -41,14 +41,9 @@ class BookingDialog(CancelAndHelpDialog):
     async def destination_step(
             self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
-        """
-        If a destination city has not been provided, prompt for one.
-        :param step_context:
-        :return DialogTurnResult:
-        """
         booking_details = step_context.options
 
-        if booking_details.destination is None:
+        if booking_details.titleorisbn is None:
             message_text = "Certo! Dimmi il nome o l'isbn del libro da cercare?"
             prompt_message = MessageFactory.text(
                 message_text, message_text, InputHints.expecting_input
@@ -56,7 +51,7 @@ class BookingDialog(CancelAndHelpDialog):
             return await step_context.prompt(
                 TextPrompt.__name__, PromptOptions(prompt=prompt_message)
             )
-        return await step_context.next(booking_details.destination)
+        return await step_context.next(booking_details.titleorisbn)
 
     async def origin_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         """
@@ -69,13 +64,12 @@ class BookingDialog(CancelAndHelpDialog):
         results = None
 
         # Capture the response to the previous step's prompt
-        booking_details.destination = step_context.result
-        if booking_details.origin is None:
-
-            if is_valid_isbn(booking_details.destination):
-                result = self.api.search_by_isbn(booking_details.destination)
+        booking_details.titleorisbn = step_context.result
+        if booking_details.index is None:
+            if is_valid_isbn(booking_details.titleorisbn):
+                result = self.api.search_by_isbn(booking_details.titleorisbn)
             else:
-                results = self.api.search_by_title(booking_details.destination)
+                results = self.api.search_by_title(booking_details.titleorisbn)
 
             if results is not None:
                 message = "Ho trovato i seguenti libri: \n\n"
@@ -90,32 +84,26 @@ class BookingDialog(CancelAndHelpDialog):
                 return await step_context.prompt(
                     TextPrompt.__name__, PromptOptions(prompt=prompt_message)
                 )
-                return await step_context.next(booking_details.origin)
+                return await step_context.next(booking_details.index)
 
             if result is not None:
-                print(result)
                 await self._printBook(result, step_context)
 
-        return await step_context.next(booking_details.origin)
+        return await step_context.end_dialog()
 
     async def travel_date_step(
             self, step_context: WaterfallStepContext
     ) -> DialogTurnResult:
         input = step_context.result
         book = self.api.getBookFinded(input)
-        await self._printBook(book, step_context)
-
-        booking_details = step_context.options
-
-        # Capture the results of the previous step
-        booking_details.origin = step_context.result
-        if not booking_details.travel_date or self.is_ambiguous(
-                booking_details.travel_date
-        ):
-            return await step_context.begin_dialog(
-                DateResolverDialog.__name__, booking_details.travel_date
-            )
-        return await step_context.next(booking_details.travel_date)
+        if book is not False:
+            await self._printBook(book, step_context)
+            return await step_context.next()
+        else:
+            message = "Valore non valido riprova!"
+            prompt_message = MessageFactory.text(message, message, InputHints.expecting_input)
+            await step_context.context.send_activity(prompt_message)
+            return await step_context.begin_dialog(self.id, step_context.context)
 
     async def _printBook(self, book, step_context):
         if book is not False:
@@ -149,8 +137,7 @@ class BookingDialog(CancelAndHelpDialog):
         # Capture the results of the previous step
         booking_details.travel_date = step_context.result
         message_text = (
-            f"Please confirm, I have you traveling to: {booking_details.destination} from: "
-            f"{booking_details.origin} on: {booking_details.travel_date}."
+            "Vuoi aggiungerlo ai preferiti?"
         )
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.expecting_input
