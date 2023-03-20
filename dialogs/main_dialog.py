@@ -80,7 +80,7 @@ class MainDialog(ComponentDialog):
 
         else:
             didnt_understand_text = (
-                "Sorry, I didn't get that. Please try asking in a different way"
+                "Scusa ma non ho capito, perfavore ripova"
             )
             didnt_understand_message = MessageFactory.text(
                 didnt_understand_text, didnt_understand_text, InputHints.ignoring_input
@@ -90,23 +90,7 @@ class MainDialog(ComponentDialog):
         return await step_context.next(None)
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        # If the child dialog ("BookingDialog") was cancelled or the user failed to confirm,
-        # the Result here will be null.
         prompt_message = "Vuoi fare altro?"
         return await step_context.replace_dialog(self.id, prompt_message)
 
 
-'''    @staticmethod
-    async def _show_warning_for_unsupported_cities(
-            context: TurnContext, luis_result: BookingDetails
-    ) -> None:
-        if luis_result.unsupported_airports:
-            message_text = (
-                f"Sorry but the following airports are not supported:"
-                f" {', '.join(luis_result.unsupported_airports)}"
-            )
-            message = MessageFactory.text(
-                message_text, message_text, InputHints.ignoring_input
-            )
-            await context.send_activity(message)
-'''

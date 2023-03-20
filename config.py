@@ -11,8 +11,10 @@ class DefaultConfig:
     """ Bot Configuration """
 
     PORT = 3978
-    APP_ID = os.environ.get("MicrosoftAppId", "9526ffd7-c70e-4687-86d6-f843e8fbba0d")
-    APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "aA18Q~6l4gtRqPlljliCqfsvSCgYOVB5WXmFhc70")
+    # APP_ID = os.environ.get("MicrosoftAppId", "")
+    # APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
+    APP_ID = os.environ.get("MicrosoftAppId", "5583e680-d5d9-4f82-b85b-11d590e3597e")
+    APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "lZH8Q~4o-TkLO-udeIRBoi1EzqIsdUPTmjoI6bVO")
     LUIS_APP_ID = os.environ.get("LuisAppId", "bd9871a7-ff91-4ebe-ab08-f7c6111c483b")
     LUIS_API_KEY = os.environ.get("LuisAPIKey", "a37771eb19e34aa78dd420ccf3f002e1")
     # LUIS endpoint host name, ie "westus.api.cognitive.microsoft.com"

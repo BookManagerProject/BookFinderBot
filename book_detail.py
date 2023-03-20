@@ -8,8 +8,8 @@ class BookDetail:
             self,
             titleorisbn: str = None,
             index: str = None,
-            book: array = None
+            books: array = None
     ):
         self.titleorisbn = titleorisbn
         self.index = index
-        self.book = book
+        self.books = books

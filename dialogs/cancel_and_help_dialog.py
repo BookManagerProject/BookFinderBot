@@ -23,15 +23,16 @@ class CancelAndHelpDialog(ComponentDialog):
 
     async def interrupt(self, inner_dc: DialogContext) -> DialogTurnResult:
         if inner_dc.context.activity.type == ActivityTypes.message:
-            text = inner_dc.context.activity.text.lower()
+            if inner_dc.context.activity.text is not None:
+                text = inner_dc.context.activity.text.lower()
 
-            cancel_message_text = "Conversazione annullata"
-            cancel_message = MessageFactory.text(
-                cancel_message_text, cancel_message_text, InputHints.ignoring_input
-            )
+                cancel_message_text = "Conversazione annullata"
+                cancel_message = MessageFactory.text(
+                    cancel_message_text, cancel_message_text, InputHints.ignoring_input
+                )
 
-            if text in ("annulla", "chiudi", "ciao"):
-                await inner_dc.context.send_activity(cancel_message)
-                return await inner_dc.cancel_all_dialogs()
+                if text in ("annulla", "chiudi", "ciao"):
+                    await inner_dc.context.send_activity(cancel_message)
+                    return await inner_dc.cancel_all_dialogs()
 
         return None

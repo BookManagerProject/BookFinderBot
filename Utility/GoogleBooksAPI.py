@@ -1,3 +1,5 @@
+import array
+
 import requests
 
 
@@ -5,30 +7,19 @@ class GoogleBooksAPI:
     BASE_URL = 'https://www.googleapis.com/books/v1/'
 
     def __init__(self):
-        self.results = None
+        self.results = []
 
-    def search_by_isbn(self, isbn):
+    def search_by_isbn(self, isbn) -> dict:
         url = f'{self.BASE_URL}volumes?q=isbn:{isbn}'
         response = requests.get(url)
+        self.results.append(self._parse_response(response))
         return self._parse_response(response)[0]
 
-    def search_by_title(self, title):
+    def search_by_title(self, title) -> array:
         url = f'{self.BASE_URL}volumes?q=intitle:{title}'
         response = requests.get(url)
         self.results = self._parse_response(response)
         return self._parse_response(response)
-
-    def countBookFinded(self):
-        return len(self.results)
-
-    def getBookFinded(self, index):
-        try:
-            indexint = int(index)
-        except TypeError:
-            return False
-        if self.results is not None and indexint < len(self.results):
-            return self.results[indexint]
-        return False
 
     def _parse_response(self, response):
         results = response.json()['items']

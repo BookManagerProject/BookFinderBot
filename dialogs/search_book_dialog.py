@@ -3,22 +3,24 @@ from urllib import request
 
 from botbuilder.core import MessageFactory, UserState
 from botbuilder.dialogs import (
-    ComponentDialog,
     Choice, PromptValidatorContext, NumberPrompt, AttachmentPrompt
 )
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
 from botbuilder.schema import InputHints, Attachment, MediaUrl
 
-from Utility.BookChecker import is_valid_isbn
+from Utility.BookParser import BookParser
 from Utility.GoogleBooksAPI import GoogleBooksAPI
-from helpers.Services.CognitiveService import ComputerVision
-from helpers.Services.VoiceService import SpeechToTextConverter
+from dialogs import CancelAndHelpDialog
+from servicesResources.CognitiveService import ComputerVision
+from servicesResources.VoiceService import SpeechToTextConverter
 
 
-class BookDialog(ComponentDialog):
+class BookDialog(CancelAndHelpDialog):
     def __init__(self, user_state: UserState, dialog_id: str = None):
-        super(BookDialog, self).__init__(dialog_id or BookDialog.__name__)
+        super(BookDialog, self).__init__(
+            dialog_id or BookDialog.__name__
+        )
 
         self.user_profile_accessor = user_state.create_property("UserInfo")
 
@@ -77,20 +79,17 @@ class BookDialog(ComponentDialog):
             if len(result) > 0:
                 if "image" in result[0].content_type:
                     cerca = ComputerVision()
-                    text = cerca.get_text_from_img(result[0].content_url)
+                    results = cerca.get_text_from_img(result[0].content_url)
                 elif "audio" in result[0].content_type:
                     cerca = SpeechToTextConverter()
                     text = cerca.recognize_from_url(result[0].content_url)
-                book_detail.titleorisbn = text
-
         else:
             book_detail.titleorisbn = step_context.result
-        if book_detail.index is None:
-            if is_valid_isbn(book_detail.titleorisbn):
+            if BookParser.is_valid_isbn(book_detail.titleorisbn):
                 result = self.api.search_by_isbn(book_detail.titleorisbn)
             else:
                 results = self.api.search_by_title(book_detail.titleorisbn)
-
+        if book_detail.index is None:
             if results is not None:
                 message = "Ho trovato i seguenti libri: \n\n"
                 i = 1
@@ -98,7 +97,8 @@ class BookDialog(ComponentDialog):
                     message += str(i) + "- " + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
                     i += 1
                 message += "\n Indicami scrivendomi il numero, quale libro stavi cercando"
-                self.index = self.api.countBookFinded()
+                self.index = len(results) + 1
+                book_detail.books = results
                 return await step_context.prompt(
                     NumberPrompt.__name__,
                     PromptOptions(
@@ -109,7 +109,7 @@ class BookDialog(ComponentDialog):
                     ),
                 )
             if result is not None:
-                return await step_context.replace_dialog(BookDialog.__name__, book_detail.titleorisbn)
+                return await step_context.next(book_detail.books)
 
     async def _printBook(self, book, step_context):
         if book is not False:
@@ -133,12 +133,19 @@ class BookDialog(ComponentDialog):
     async def three(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options
         book_detail.index = step_context.result
-        book = self.api.getBookFinded(book_detail.index)
-        self.index = book_detail.index
-        if book is not False:
+        if book_detail.index is None:
+            book = self.api.getBookFinded(0)
             book_detail.book = book
             await self._printBook(book, step_context)
             return await step_context.next(book_detail.book)
+        else:
+            books = book_detail.books
+            index = int(book_detail.index) - 1
+            if len(books) > index:
+                book = books[index]
+                book_detail.book = book
+                await self._printBook(book, step_context)
+                return await step_context.next(book_detail.book)
 
     async def four(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options

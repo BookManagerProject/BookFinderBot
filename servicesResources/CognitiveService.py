@@ -1,3 +1,4 @@
+import array
 import os
 import time
 
@@ -6,6 +7,8 @@ from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 from msrest.authentication import CognitiveServicesCredentials
 
+from Utility.BookParser import BookParser
+from Utility.GoogleBooksAPI import GoogleBooksAPI
 from config import DefaultConfig
 
 
@@ -22,8 +25,7 @@ class ComputerVision:
     This API call can also extract handwriting style text (not shown).
     '''
 
-    # TODO: implementare controllo tipo immagine e cercare di cancellare lettura e scrittura del file
-    def get_text_from_img(self, img_url):
+    def get_text_from_img(self, img_url) -> array:
         r = requests.get(img_url).content
         with open('tmp.jpg', 'wb') as f:
             f.write(r)
@@ -50,7 +52,15 @@ class ComputerVision:
                 for line in text_result.lines:
                     text += ' ' + line.text
                     # print(line.bounding_box)
-        text = text_result.lines[0].text + ' ' + text_result.lines[1].text
+
+        list = BookParser.find_isbns(text)
+        results = []
+        api = GoogleBooksAPI()
+        if len(list) > 0:
+            for element in list:
+                results.append(api.search_by_isbn(element))
+        else:
+            results = api.search_by_title(text)
 
         os.remove('tmp.jpg')
-        return text
+        return results
