@@ -14,6 +14,9 @@ from Utility.GoogleBooksAPI import GoogleBooksAPI
 from dialogs import CancelAndHelpDialog
 from servicesResources.CognitiveService import ComputerVision
 from servicesResources.VoiceService import SpeechToTextConverter
+from user_info import UserInfo
+from book_detail import BookDetail
+from servicesResources.DatabaseInterface import DatabaseInterface
 
 
 class BookDialog(CancelAndHelpDialog):
@@ -61,19 +64,21 @@ class BookDialog(CancelAndHelpDialog):
         book_detail = step_context.options
         book_detail.titleorisbn = step_context.result
         if book_detail.titleorisbn is None:
-            message_text = "Certo! Dimmi il nome o l'isbn del libro da cercare?"
+            message_text = "Certo! Dimmi il nome o l'isbn del libro da cercare oppure scatta una foto"
             prompt_message = PromptOptions(
                 prompt=MessageFactory.text(
-                    message_text
+                    message_text, InputHints.expecting_input
                 )
             )
             return await step_context.prompt(
-                AttachmentPrompt.__name__, prompt_message
+                TextPrompt.__name__, prompt_message
             )
         return await step_context.next(book_detail.titleorisbn)
 
     async def second(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options
+        result = None
+        results = None
         if type(step_context.result) == list:
             result = step_context.result
             if len(result) > 0:
@@ -108,8 +113,16 @@ class BookDialog(CancelAndHelpDialog):
                         ),
                     ),
                 )
-            if result is not None:
-                return await step_context.next(book_detail.books)
+            elif result is not None:
+                book_detail.books = [result]
+                book_detail.index = 0
+                return await step_context.next(book_detail.index)
+            else:
+                book_detail.books = None
+                message_text = "Nessun risultato trovato. Riprova"
+                prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
+                await step_context.context.send_activity(prompt_message)
+                return await step_context.next(book_detail.index)
 
     async def _printBook(self, book, step_context):
         if book is not False:
@@ -133,70 +146,66 @@ class BookDialog(CancelAndHelpDialog):
     async def three(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options
         book_detail.index = step_context.result
-        if book_detail.index is None:
-            book = self.api.getBookFinded(0)
-            book_detail.book = book
-            await self._printBook(book, step_context)
-            return await step_context.next(book_detail.book)
-        else:
+        if book_detail.books is not None:
             books = book_detail.books
-            index = int(book_detail.index) - 1
-            if len(books) > index:
-                book = books[index]
-                book_detail.book = book
-                await self._printBook(book, step_context)
-                return await step_context.next(book_detail.book)
+            if book_detail.index is None:
+                await self._printBook(books[0], step_context)
+            else:
+                index = int(book_detail.index) - 1
+                if len(books) > index:
+                    book = books[index]
+                    book_detail.book = book
+                    await self._printBook(book, step_context)
+                    return await step_context.next(book_detail.books)
+        return await step_context.next(book_detail.books)
 
     async def four(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
         book_detail = step_context.options
-        book_detail.book = step_context.result
-        message_text = (
-            "Vuoi aggiungerlo ai preferiti?"
-        )
-
-        return await step_context.prompt(
-            ConfirmPrompt.__name__,
-            PromptOptions(
-                prompt=MessageFactory.text(message_text),
-                choices=[Choice("Si"), Choice("No")],
-            ),
-        )
+        book = BookDetail(book_detail.book["isbn"], book_detail.book["title"], book_detail.book["publishedDate"],
+                          book_detail.book["description"], book_detail.book["previewLink"])
+        DatabaseInterface.addSearchedBook(book)
+        if session_account.email is not None:
+            book_detail.book = book
+            message_text = (
+                "Vuoi aggiungerlo ai preferiti?"
+            )
+            return await step_context.prompt(
+                ConfirmPrompt.__name__,
+                PromptOptions(
+                    prompt=MessageFactory.text(message_text),
+                    choices=[Choice("Si"), Choice("No")],
+                ),
+            )
+        elif session_account.email is None and book_detail.books is not None and book_detail.index is not None:
+            message_text = "Dato che non sei loggato non puoi aggiungere il libro ai preferiti poichè non sei loggato"
+            prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
+            await step_context.context.send_activity(prompt_message)
+        return await step_context.next(step_context.options)
 
     async def six(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options
-        if step_context.result is not None:
+        session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
+        if book_detail.books is not None and book_detail.index is not None and session_account.email is not None:
             result = step_context.result
             if result:
-                message_text = (
-                    "Aggiunto!"
-                )
+                if session_account.checkIfBookIsStarred(book_detail.book):
+                    message_text = (
+                        "Il libro è già presente tra i tuoi preferiti!"
+                    )
+                elif DatabaseInterface.addStarredBook(session_account, book_detail.book):
+                    session_account.starredBook.append(book_detail.book)
+                    message_text = (
+                        "Aggiunto!"
+                    )
+                else:
+                    message_text = (
+                        "Si è verificato un errore durante l'aggiunta. Riprova!"
+                    )
             else:
                 message_text = (
                     "Non aggiunto!"
                 )
             prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
             await step_context.context.send_activity(prompt_message)
-            return await step_context.next(book_detail.index)
-
-    @staticmethod
-    async def picture_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
-        if not prompt_context.recognized.succeeded:
-            await prompt_context.context.send_activity(
-                "No attachments received. Proceeding without a profile picture..."
-            )
-
-            # We can return true from a validator function even if recognized.succeeded is false.
-            return True
-
-        attachments = prompt_context.recognized.value
-
-        valid_images = [
-            attachment
-            for attachment in attachments
-            if attachment.content_type in ["image/jpeg", "image/png"]
-        ]
-
-        prompt_context.recognized.value = valid_images
-
-        # If none of the attachments are valid images, the retry prompt should be sent.
-        return len(valid_images) > 0
+        return await step_context.next(book_detail.index)

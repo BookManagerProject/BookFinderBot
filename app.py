@@ -25,7 +25,7 @@ from adapter_with_error_handler import AdapterWithErrorHandler
 from bots import DialogAndWelcomeBot
 from config import DefaultConfig
 from conversation_recognizer import ConversationRecognizer
-from dialogs import MainDialog, BookDialog
+from dialogs import MainDialog, BookDialog, LoginDialog, RegistrationDialog
 
 CONFIG = DefaultConfig()
 
@@ -45,7 +45,9 @@ ADAPTER = AdapterWithErrorHandler(SETTINGS, CONVERSATION_STATE)
 # Create dialogs and Bot
 RECOGNIZER = ConversationRecognizer(CONFIG)
 BOOK_DIALOG = BookDialog(USER_STATE)
-DIALOG = MainDialog(RECOGNIZER, BOOK_DIALOG)
+LOGIN_DIALOG = LoginDialog(USER_STATE)
+REGISTRAZIONE_DIALOG = RegistrationDialog(USER_STATE)
+DIALOG = MainDialog(USER_STATE, RECOGNIZER, BOOK_DIALOG, LOGIN_DIALOG, REGISTRAZIONE_DIALOG)
 BOT = DialogAndWelcomeBot(CONVERSATION_STATE, USER_STATE, DIALOG)
 
 

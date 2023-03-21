@@ -6,14 +6,17 @@ from typing import Dict
 from botbuilder.ai.luis import LuisRecognizer
 from botbuilder.core import IntentScore, TopIntent, TurnContext
 
-from book_detail import BookDetail
+from book_search_detail import BookSearchDetail
+from user_info import UserInfo
 
 
 class Intent(Enum):
-    BOOK_FLIGHT = "BookFlight"
-    CANCEL = "Cancel"
-    GET_WEATHER = "GetWeather"
+    CERCA_LIBRO = "CercaLibro"
+    CANCEL = "Annulla"
+    LOGIN = "Login"
     NONE_INTENT = "NoneIntent"
+    PREFERITI = "Preferiti"
+    REGISTRAZIONE = "Registrazione"
 
 
 def top_intent(intents: Dict[Intent, dict]) -> TopIntent:
@@ -52,8 +55,12 @@ class LuisHelper:
                 else None
             )
 
-            if intent == Intent.BOOK_FLIGHT.value:
-                result = BookDetail()
+            if intent == Intent.CERCA_LIBRO.value:
+                result = BookSearchDetail()
+            elif intent == Intent.LOGIN.value:
+                result = UserInfo()
+            elif intent == Intent.REGISTRAZIONE.value:
+                result = UserInfo()
 
         except Exception as exception:
             print(exception)

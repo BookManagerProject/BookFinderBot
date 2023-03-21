@@ -1,16 +1,15 @@
 from botbuilder.core import MessageFactory, UserState
-from botbuilder.dialogs import (
-    ComponentDialog,
-)
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
 from botbuilder.schema import InputHints
-from utility import util_func
 
+from dialogs import CancelAndHelpDialog
 from user_info import UserInfo
+from Utility.DatabaseUtility import  DatabaseUtility
+from servicesResources.DatabaseInterface import DatabaseInterface
 
 
-class LoginDialog(ComponentDialog):
+class LoginDialog(CancelAndHelpDialog):
     def __init__(self, user_state: UserState, dialog_id: str = None):
         super(LoginDialog, self).__init__(dialog_id or LoginDialog.__name__)
 
@@ -66,9 +65,9 @@ class LoginDialog(ComponentDialog):
         # Capture the response to the previous step's prompt
         account_info.password = step_context.result
 
-        pwd = db_interface.get_pwd(account_info.email)
+        pwd = DatabaseInterface.get_pwd(account_info.email)
         if pwd == False:
-            message = f'Non ti sei registrato'
+            message = f'Non ti sei registrato, per farlo basta dire "Vorrei registrarmi" o "registrazione"'
             prompt_message = MessageFactory.text(
                 message, message, InputHints.expecting_input
             )
@@ -78,15 +77,15 @@ class LoginDialog(ComponentDialog):
             )
             return await step_context.end_dialog(account_info)
 
-        result = util_func.check_pwd(account_info.password, pwd.encode('utf-8'))
+        result = DatabaseUtility.check_pwd(account_info.password, pwd.encode('utf-8'))
         if result == True:
-            account_info = db_interface.login(account_info.email)
+            account_info = DatabaseInterface.login(account_info.email)
             session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
             session_account.email = account_info.email
             session_account.firstName = account_info.firstName
             session_account.lastName = account_info.lastName
-            session_account.medicine = util_func.printMedicineLi((account_info.get_medicine()))
-            message = f'Benvenuto {session_account.firstName}'
+            session_account.starredBook= account_info.starredBook
+            message = f'Benvenuto {session_account.firstName} {session_account.lastName}'
             prompt_message = MessageFactory.text(
                 message, message, InputHints.expecting_input
             )
@@ -95,7 +94,7 @@ class LoginDialog(ComponentDialog):
                 TextPrompt.__name__, PromptOptions(prompt=prompt_message)
             )
         else:
-            message = f'Email o password errata'
+            message = f'Email o password errata. Se vuoi riprovare chiedimi di rifare il login'
             prompt_message = MessageFactory.text(
                 message, message, InputHints.expecting_input
             )
@@ -104,7 +103,6 @@ class LoginDialog(ComponentDialog):
                 TextPrompt.__name__, PromptOptions(prompt=prompt_message)
             )
 
-        # call the final_step to end this convesation and call MainDialog.final_step. At this point the conversation is restarted
         return await step_context.end_dialog(account_info)
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:

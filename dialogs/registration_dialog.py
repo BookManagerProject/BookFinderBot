@@ -5,12 +5,14 @@ from botbuilder.dialogs import (
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
 from botbuilder.schema import InputHints
-from utility import util_func
 
+from dialogs import CancelAndHelpDialog
+from servicesResources.DatabaseInterface import DatabaseInterface
+from Utility.DatabaseUtility import DatabaseUtility
 from user_info import UserInfo
 
 
-class RegistrationDialog(ComponentDialog):
+class RegistrationDialog(CancelAndHelpDialog):
     def __init__(self, user_state: UserState, dialog_id: str = None):
         super(RegistrationDialog, self).__init__(dialog_id or RegistrationDialog.__name__)
 
@@ -113,12 +115,12 @@ class RegistrationDialog(ComponentDialog):
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         account_info = step_context.options
-        hashed_pwd = util_func.get_hashed_pwd(account_info.password)
-        result = db_interface.insert_user(account_info.email, account_info.firstName, account_info.lastName, hashed_pwd)
+        hashed_pwd = DatabaseUtility.get_hashed_pwd(account_info.password)
+        result = DatabaseInterface.insert_user(account_info.email, account_info.firstName, account_info.lastName, hashed_pwd)
         if result == True:
             session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
             session_account.email = account_info.email
-            message_text = 'Account creato con successo, ora puoi registrare i tuoi medicinali'
+            message_text = 'Account creato con successo, ora puoi registrare i tuoi libri preferiti'
         else:
             message_text = "Errore nella creazione dell'account, riprova con un email diversa."
         prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)

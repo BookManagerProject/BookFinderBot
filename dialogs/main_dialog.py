@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
-from botbuilder.core import MessageFactory
+from botbuilder.core import MessageFactory, UserState
 from botbuilder.dialogs import (
     ComponentDialog,
     WaterfallDialog,
@@ -13,26 +13,32 @@ from botbuilder.schema import InputHints
 
 from conversation_recognizer import ConversationRecognizer
 from helpers.luis_helper import LuisHelper, Intent
+from user_info import UserInfo
 from .search_book_dialog import BookDialog
+from .login_dialog import LoginDialog
+from .registration_dialog import RegistrationDialog
 
 
 class MainDialog(ComponentDialog):
     def __init__(
-            self, luis_recognizer: ConversationRecognizer, book_dialog: BookDialog
+            self, user_state: UserState, luis_recognizer: ConversationRecognizer, book_dialog: BookDialog, login_dialog: LoginDialog, registrazione_dialog: RegistrationDialog
     ):
         super(MainDialog, self).__init__(MainDialog.__name__)
 
         self._luis_recognizer = luis_recognizer
         self._book_dialog_id = book_dialog.id
-
+        self._login_dialog_id = login_dialog.id
+        self._registrazione_dialog_id = registrazione_dialog.id
         self.add_dialog(TextPrompt(TextPrompt.__name__))
         self.add_dialog(book_dialog)
+        self.add_dialog(login_dialog)
+        self.add_dialog(registrazione_dialog)
         self.add_dialog(
             WaterfallDialog(
                 "WFDialog", [self.intro_step, self.act_step, self.final_step]
             )
         )
-
+        self.user_profile_accessor = user_state.create_property("UserInfo")
         self.initial_dialog_id = "WFDialog"
 
     async def intro_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
@@ -60,23 +66,38 @@ class MainDialog(ComponentDialog):
         )
 
     async def act_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
 
-        # Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
         intent, luis_result = await LuisHelper.execute_luis_query(
             self._luis_recognizer, step_context.context
         )
 
-        if intent == Intent.BOOK_FLIGHT.value and luis_result:
-
-            # Run the BookingDialog giving it whatever details we have from the LUIS call.
+        if intent == Intent.CERCA_LIBRO.value and luis_result:
             return await step_context.begin_dialog(self._book_dialog_id, luis_result)
 
-        if intent == Intent.GET_WEATHER.value:
-            get_weather_text = "TODO: get weather flow here"
-            get_weather_message = MessageFactory.text(
-                get_weather_text, get_weather_text, InputHints.ignoring_input
-            )
-            await step_context.context.send_activity(get_weather_message)
+        elif intent == Intent.LOGIN.value:
+            if session_account.email is None:
+                return await step_context.begin_dialog(self._login_dialog_id, luis_result)
+            else:
+                text = (
+                    "Sei già loggato, non serve loggarti"
+                )
+                message = MessageFactory.text(
+                    text, text, InputHints.ignoring_input
+                )
+                await step_context.context.send_activity(message)
+
+        elif intent == Intent.REGISTRAZIONE.value:
+            if session_account.email is None:
+                return await step_context.begin_dialog(self._registrazione_dialog_id, luis_result)
+            else:
+                text = (
+                    "Sei già loggato, non serve registrarti"
+                )
+                message = MessageFactory.text(
+                    text, text, InputHints.ignoring_input
+                )
+                await step_context.context.send_activity(message)
 
         else:
             didnt_understand_text = (
@@ -90,7 +111,7 @@ class MainDialog(ComponentDialog):
         return await step_context.next(None)
 
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        prompt_message = "Vuoi fare altro?"
+        prompt_message = "C'è altro che posso fare per te?"
         return await step_context.replace_dialog(self.id, prompt_message)
 
 
