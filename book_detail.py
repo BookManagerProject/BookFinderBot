@@ -1,6 +1,5 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
-import array
 import string
 
 
@@ -11,10 +10,12 @@ class BookDetail:
             tile: string,
             publishedDate: string,
             description: string,
-            image: string
+            image: string,
+            autori: string
     ):
-        self.isbn = isbn
-        self.title = tile
+        self.isbn = str(isbn)
+        self.title = str(tile)
         self.publishedDate = publishedDate,
-        self.description = description,
-        self.image = image
+        self.description = str(description),
+        self.image = str(image),
+        self.autori = str(autori)

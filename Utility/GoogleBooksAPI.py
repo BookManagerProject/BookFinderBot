@@ -32,14 +32,20 @@ class GoogleBooksAPI:
         results = json['items']
         books = []
         for result in results:
+            try:
+                thumbmail = result['volumeInfo']["imageLinks"]["thumbnail"]
+            except Exception:
+                continue
+            autori = str(result['volumeInfo'].get('authors', '')).replace("[", "").replace("]", "").replace("'", "")
             book = {
                 'isbn': result['volumeInfo'].get('industryIdentifiers', [])[0].get('identifier', '') if result[
                     'volumeInfo'].get('industryIdentifiers', []) else '',
                 'title': result['volumeInfo'].get('title', ''),
                 'publishedDate': result['volumeInfo'].get('publishedDate', ''),
                 'description': result['volumeInfo'].get('description', ''),
-                'previewLink': result['volumeInfo']["imageLinks"]["thumbnail"],
-                'infoLink': result['volumeInfo'].get('infoLink', '')
+                'previewLink': thumbmail,
+                'infoLink': result['volumeInfo'].get('infoLink', ''),
+                'autori': autori
             }
             books.append(book)
         return books

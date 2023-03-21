@@ -1,11 +1,12 @@
 import array
-import string
-import traceback
-import pyodbc
 import datetime
-from user_info import UserInfo
-from config import DefaultConfig
+import traceback
+
+import pyodbc
+
 from book_detail import BookDetail
+from config import DefaultConfig
+from user_info import UserInfo
 
 
 class DatabaseInterface:
@@ -160,9 +161,12 @@ class DatabaseInterface:
             with pyodbc.connect(DatabaseInterface.CONNECTIONSTRING) as conn:
                 with conn.cursor() as cursor:
                     pd = str(book.publishedDate).replace("('", "").replace("',)", "")
-                    description = str(book.description).replace("('", "").replace("',)", "")
-                    datesplit = pd.split("T")[0].split("-")
-                    date = datetime.date(int(datesplit[0]), int(datesplit[1]), int(datesplit[2]))
+                    try:
+                        description = str(book.description).replace("('", "").replace("',)", "")
+                        datesplit = pd.split("T")[0].split("-")
+                        date = datetime.date(int(datesplit[0]), int(datesplit[1]), int(datesplit[2]))
+                    except:
+                        date = datetime.date(int(pd), 1, 1)
                     cursor.execute(
                         "INSERT INTO book([isbn],[title],[publishedDate],[description],[image]) VALUES (?,?,?,?,?)",
                         book.isbn,

@@ -1,3 +1,4 @@
+import datetime
 from io import BytesIO
 from urllib import request
 
@@ -7,16 +8,16 @@ from botbuilder.dialogs import (
 )
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
-from botbuilder.schema import InputHints, Attachment, MediaUrl
+from botbuilder.schema import InputHints, Attachment
 
 from Utility.BookParser import BookParser
 from Utility.GoogleBooksAPI import GoogleBooksAPI
+from book_detail import BookDetail
 from dialogs import CancelAndHelpDialog
 from servicesResources.CognitiveService import ComputerVision
+from servicesResources.DatabaseInterface import DatabaseInterface
 from servicesResources.VoiceService import SpeechToTextConverter
 from user_info import UserInfo
-from book_detail import BookDetail
-from servicesResources.DatabaseInterface import DatabaseInterface
 
 
 class BookDialog(CancelAndHelpDialog):
@@ -126,19 +127,27 @@ class BookDialog(CancelAndHelpDialog):
 
     async def _printBook(self, book, step_context):
         if book is not False:
-            message = "Ecco le info del libro\n\n" + book["title"] + "\n\n" + book["description"] + "\n\n" + book[
-                "publishedDate"]
+            pd = str(book["publishedDate"]).replace("('", "").replace("',)", "")
+            try:
+                datesplit = pd.split("T")[0].split("-")
+                date = datetime.date(int(datesplit[0]), int(datesplit[1]), int(datesplit[2]))
+            except:
+                date = datetime.date(int(pd), 1, 1)
+            datestring = str(date.day) + "/" + str(date.month) + "/" + str(date.year)
+            message = "Ecco le info del libro\n\nTitolo: " + book["title"]
+            if book["description"] != "":
+                message += "\n\nDescrizione: " + book["description"]
+            message += "\n\nData di pubblicazione: " + datestring
+            message += "\n\nAutore/i: " + book["autori"]
             image_url = book["previewLink"]
             image_content = request.urlopen(image_url).read()
             image_data = BytesIO(image_content)
-            media_url = MediaUrl(url=image_url)
             attachment = Attachment(
                 name=message,
                 content_type="image/jpeg",
                 content_url=image_url,
                 content=image_data,
-                thumbnail_url=image_url,
-                thumbnail_media_url=media_url,
+                thumbnail_url=image_url
             )
             message_with_image = MessageFactory.attachment(attachment, text=message)
             await step_context.context.send_activity(message_with_image)
@@ -163,7 +172,7 @@ class BookDialog(CancelAndHelpDialog):
         session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
         book_detail = step_context.options
         book = BookDetail(book_detail.book["isbn"], book_detail.book["title"], book_detail.book["publishedDate"],
-                          book_detail.book["description"], book_detail.book["previewLink"])
+                          book_detail.book["description"], book_detail.book["previewLink"], book_detail.book["autori"])
         DatabaseInterface.addSearchedBook(book)
         if session_account.email is not None:
             book_detail.book = book
