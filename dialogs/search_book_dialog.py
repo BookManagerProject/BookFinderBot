@@ -128,14 +128,14 @@ class BookDialog(CancelAndHelpDialog):
         result = None
         results = None
         if type(step_context.result) == list:
-            result = step_context.result
-            if len(result) > 0:
-                if "image" in result[0].content_type:
+            resultcontext = step_context.result
+            if len(resultcontext) > 0:
+                if "image" in resultcontext[0].content_type:
                     cerca = ComputerVision()
-                    results = cerca.get_text_from_img(result[0].content_url)
-                elif "audio" in result[0].content_type:
+                    results = cerca.get_text_from_img(resultcontext[0].content_url)
+                elif "audio" in resultcontext[0].content_type:
                     cerca = SpeechToTextConverter()
-                    text = cerca.recognize_from_url(result[0].content_url)
+                    text = cerca.recognize_from_url(resultcontext[0].content_url)
         else:
             book_detail.titleorisbn = step_context.result
             if BookParser.is_valid_isbn(book_detail.titleorisbn):
@@ -143,7 +143,7 @@ class BookDialog(CancelAndHelpDialog):
             else:
                 results = self.api.search_by_title(book_detail.titleorisbn)
         if book_detail.index is None:
-            if results is not None:
+            if results is not None and len(results) > 0:
                 message = "Ho trovato i seguenti libri: \n\n"
                 i = 1
                 for result in results:
@@ -218,25 +218,27 @@ class BookDialog(CancelAndHelpDialog):
     async def four(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
         book_detail = step_context.options
-        book = BookDetail(book_detail.book["isbn"], book_detail.book["title"], book_detail.book["publishedDate"],
-                          book_detail.book["description"], book_detail.book["previewLink"], book_detail.book["autori"])
-        DatabaseInterface.addSearchedBook(book)
-        if session_account.email is not None:
-            book_detail.book = book
-            message_text = (
-                "Vuoi aggiungerlo ai preferiti?"
-            )
-            return await step_context.prompt(
-                ChoicePrompt.__name__,
-                PromptOptions(
-                    prompt=MessageFactory.text(message_text),
-                    choices=[Choice("Si"), Choice("No")],
-                ),
-            )
-        elif session_account.email is None and book_detail.books is not None and book_detail.index is not None:
-            message_text = "Dato che **non sei loggato** non puoi aggiungere il libro ai preferiti"
-            prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
-            await step_context.context.send_activity(prompt_message)
+        if book_detail.books is not None:
+            book = BookDetail(book_detail.book["isbn"], book_detail.book["title"], book_detail.book["publishedDate"],
+                              book_detail.book["description"], book_detail.book["previewLink"],
+                              book_detail.book["autori"])
+            DatabaseInterface.addSearchedBook(book)
+            if session_account.email is not None:
+                book_detail.book = book
+                message_text = (
+                    "Vuoi aggiungerlo ai preferiti?"
+                )
+                return await step_context.prompt(
+                    ChoicePrompt.__name__,
+                    PromptOptions(
+                        prompt=MessageFactory.text(message_text),
+                        choices=[Choice("Si"), Choice("No")],
+                    ),
+                )
+            elif session_account.email is None and book_detail.books is not None and book_detail.index is not None:
+                message_text = "Dato che **non sei loggato** non puoi aggiungere il libro ai preferiti"
+                prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
+                await step_context.context.send_activity(prompt_message)
         return await step_context.next(step_context.options)
 
     async def six(self, step_context: WaterfallStepContext) -> DialogTurnResult:

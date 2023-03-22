@@ -36,10 +36,13 @@ class GoogleBooksAPI:
                 thumbmail = result['volumeInfo']["imageLinks"]["thumbnail"]
             except Exception:
                 continue
+            isbn = result['volumeInfo'].get('industryIdentifiers', [])[0].get('identifier', '') if result[
+                'volumeInfo'].get('industryIdentifiers', []) else ''
+            if isbn == "":
+                continue
             autori = str(result['volumeInfo'].get('authors', '')).replace("[", "").replace("]", "").replace("'", "")
             book = {
-                'isbn': result['volumeInfo'].get('industryIdentifiers', [])[0].get('identifier', '') if result[
-                    'volumeInfo'].get('industryIdentifiers', []) else '',
+                'isbn': isbn,
                 'title': result['volumeInfo'].get('title', ''),
                 'publishedDate': result['volumeInfo'].get('publishedDate', ''),
                 'description': result['volumeInfo'].get('description', ''),

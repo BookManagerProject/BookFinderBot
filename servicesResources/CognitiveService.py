@@ -1,5 +1,6 @@
 import array
 import os
+import string
 import time
 
 import requests
@@ -60,7 +61,25 @@ class ComputerVision:
             for element in list:
                 results.append(api.search_by_isbn(element))
         else:
-            results = api.search_by_title(text)
+            if self._is_word_or_sentence(text):
+                results = api.search_by_title(text)
+            else:
+                results = []
 
         os.remove('tmp.jpg')
         return results
+
+    def _is_word_or_sentence(self, phrase: str) -> bool:
+        # Rimuovi eventuali spazi all'inizio e alla fine della stringa
+        text = phrase.strip()
+
+        # Verifica se la stringa è vuota o contiene solo lettere singole
+        if len(text) == 0 or all(char.isalpha() == False for char in text):
+            return False
+
+        # Verifica se la stringa contiene solo simboli
+        if all(char in string.punctuation for char in text):
+            return False
+
+        # Altrimenti, la stringa è considerata una parola o un testo di senso compiuto
+        return True
