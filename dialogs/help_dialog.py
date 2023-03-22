@@ -1,14 +1,16 @@
-from botbuilder.core import MessageFactory, CardFactory
+from botbuilder.core import MessageFactory, UserState
 from botbuilder.dialogs import (
-    ComponentDialog
+    PromptOptions
 )
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import TextPrompt
 from botbuilder.schema import InputHints, HeroCard, CardAction, ActionTypes
 
+from dialogs import CancelAndHelpDialog
 
-class HelpDialog(ComponentDialog):
-    def __init__(self, dialog_id: str = None):
+
+class HelpDialog(CancelAndHelpDialog):
+    def __init__(self, user_state: UserState, dialog_id: str = None):
         super(HelpDialog, self).__init__(dialog_id or HelpDialog.__name__)
 
         self.add_dialog(TextPrompt(TextPrompt.__name__))
@@ -25,17 +27,17 @@ class HelpDialog(ComponentDialog):
 
     async def help_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         message_text = 'Ecco le mie principali funzioni:\n\n'
-        message_text += '  **1.** Cerca un libro.\n\n' \
-                        '  **2.** Effetture il login per gestire i libri preferiti.\n\n' \
-                        '  **3.** Effettuare la regitrazione.\n\n' \
-                        '  **4.** Visulizza preferiti.\n\n' \
-                        '  **5.** Elimina preferiti.\n\n'
+        message_text += '  1. Cerca un libro.\n\n' \
+                        '  2. Effetture il login per gestire i libri preferiti.\n\n' \
+                        '  3. Effettuare la regitrazione.\n\n' \
+                        '  4. Visulizza preferiti.\n\n' \
+                        '  5. Elimina preferiti.\n\n'
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.ignoring_input
         )
-        '''await step_context.prompt(
+        await step_context.prompt(
             TextPrompt.__name__, PromptOptions(prompt=prompt_message)
-        )'''
+        )
 
         card = HeroCard(title='Per comodità clicca la funzionalità che desideri', buttons=[
             CardAction(
@@ -76,6 +78,6 @@ class HelpDialog(ComponentDialog):
         ],
                         )
 
-        message = MessageFactory.attachment(CardFactory.hero_card(card))
-        await step_context.context.send_activity(message)
+        # message = MessageFactory.attachment(CardFactory.hero_card(card))
+        # await step_context.context.send_activity(message)
         return await step_context.end_dialog(step_context.options)
