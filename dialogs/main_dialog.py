@@ -156,7 +156,16 @@ class MainDialog(ComponentDialog):
         elif intent == Intent.HELP.value:
             return await step_context.begin_dialog(self._help_dialog_id, luis_result)
         elif intent == Intent.DELETE_ACCOUNT.value:
-            return await step_context.begin_dialog(self._delete_account_dialog_id, luis_result)
+            if session_account.email is not None:
+                return await step_context.begin_dialog(self._delete_account_dialog_id, luis_result)
+            else:
+                text = (
+                    "Devi essere loggato per eliminare l'account"
+                )
+                message = MessageFactory.text(
+                    text, text, InputHints.ignoring_input
+                )
+                await step_context.context.send_activity(message)
         else:
             didnt_understand_text = (
                 "Scusa ma non ho capito, perfavore ripova"

@@ -149,7 +149,7 @@ class BookDialog(CancelAndHelpDialog):
                 for result in results:
                     message += str(i) + "." + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
                     i += 1
-                message += "\n\n Indicami scrivendomi il numero, quale libro stavi cercando"
+                message += "\n\n\nIndicami scrivendomi il numero, quale libro stavi cercando"
                 self.index = len(results) + 1
                 book_detail.books = results
                 return await step_context.prompt(
@@ -181,11 +181,11 @@ class BookDialog(CancelAndHelpDialog):
             except:
                 date = datetime.date(int(pd), 1, 1)
             datestring = str(date.day) + "/" + str(date.month) + "/" + str(date.year)
-            message = "Ecco le info del libro\n\n**Titolo:** " + book["title"]
+            message = "Ecco le info del libro\n\nTitolo: " + book["title"]
             if book["description"] != "":
-                message += "\n\n**Descrizione:** " + book["description"]
-            message += "\n\n**Data di pubblicazione:** " + datestring
-            message += "\n\n**Autore/i:** " + book["autori"]
+                message += "\n\nDescrizione: " + book["description"]
+            message += "\n\nData di pubblicazione: " + datestring
+            message += "\n\nAutore/i: " + book["autori"]
             image_url = book["previewLink"]
             image_content = request.urlopen(image_url).read()
             image_data = BytesIO(image_content)

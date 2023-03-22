@@ -1,4 +1,4 @@
-from botbuilder.core import MessageFactory, CardFactory
+from botbuilder.core import MessageFactory
 from botbuilder.dialogs import (
     ComponentDialog
 )
@@ -76,6 +76,6 @@ class HelpDialog(ComponentDialog):
         ],
                         )
 
-        message = MessageFactory.attachment(CardFactory.hero_card(card))
-        await step_context.context.send_activity(message)
+        # message = MessageFactory.attachment(CardFactory.hero_card(card))
+        # await step_context.context.send_activity(message)
         return await step_context.end_dialog()
