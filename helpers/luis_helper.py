@@ -20,6 +20,7 @@ class Intent(Enum):
     LOGOUT = "Logout"
     CLASSIFICA = "LibriPiuCercati"
     ELIMINAPREFERITI = "RimuoviPreferiti"
+    WELCOME = 'Welcome'
 
 
 def top_intent(intents: Dict[Intent, dict]) -> TopIntent:

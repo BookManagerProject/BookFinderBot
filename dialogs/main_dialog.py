@@ -144,7 +144,8 @@ class MainDialog(ComponentDialog):
                     text, text, InputHints.ignoring_input
                 )
                 await step_context.context.send_activity(message)
-
+        elif intent == Intent.WELCOME.value:
+            return await step_context.replace_dialog(self.id, None)
         else:
             didnt_understand_text = (
                 "Scusa ma non ho capito, perfavore ripova"

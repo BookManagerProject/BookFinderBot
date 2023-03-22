@@ -14,8 +14,8 @@ class DatabaseInterface:
     DATABASE = DefaultConfig.DATABASE
     USERNAME = DefaultConfig.USERNAME
     PASSWORD = DefaultConfig.PASSWORD
-    DRIVER = '{ODBC Driver 18 for SQL Server}'
-    CONNECTIONSTRING = 'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ',1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD + ";Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30"
+    DRIVER = '{ODBC Driver 17 for SQL Server}'
+    CONNECTIONSTRING = 'DRIVER=' + DRIVER + ';SERVER=tcp:' + SERVER + ';PORT=1433;DATABASE=' + DATABASE + ';UID=' + USERNAME + ';PWD=' + PASSWORD
     # =========QUERY SQL===================
     SEARCH_USER_BY_EMAIL = "SELECT email FROM dbo.users WHERE [email] = ?"
     INSERT_USER = "INSERT INTO dbo.users([email],[pwd],[firstName],[lastName]) VALUES (?,?,?,?)"
