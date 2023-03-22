@@ -1,7 +1,7 @@
 from botbuilder.core import MessageFactory, UserState
-from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
+from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult, Choice, ChoicePrompt
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
-from botbuilder.schema import InputHints, SuggestedActions, CardAction, ActionTypes
+from botbuilder.schema import InputHints
 
 from Utility.DatabaseUtility import DatabaseUtility
 from dialogs import CancelAndHelpDialog
@@ -26,7 +26,7 @@ class DeleteAccountDialog(CancelAndHelpDialog):
                 ],
             )
         )
-
+        self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.initial_dialog_id = WaterfallDialog.__name__
 
     async def password_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
@@ -51,24 +51,13 @@ class DeleteAccountDialog(CancelAndHelpDialog):
         pwd = DatabaseInterface.get_pwd(session_account.email)
         result = DatabaseUtility.check_pwd(input_password, pwd.encode('utf-8'))
         if result == True:
-            message = MessageFactory.text(
-                "Sei sicuro di voler cancellare l'account? (perderai anche tutte i libri registrati)")
-            message.suggested_actions = SuggestedActions(
-                actions=[
-                    CardAction(
-                        title="Sì",
-                        type=ActionTypes.im_back,
-                        value="Si",
-                    ),
-                    CardAction(
-                        title="No",
-                        type=ActionTypes.im_back,
-                        value="No",
-                    ),
-                ]
-            )
+            message = "Sei sicuro di voler cancellare l'account? (perderai anche tutte i libri registrati)"
             return await step_context.prompt(
-                TextPrompt.__name__, PromptOptions(prompt=message)
+                ChoicePrompt.__name__,
+                PromptOptions(
+                    prompt=MessageFactory.text(message),
+                    choices=[Choice("Si"), Choice("No")],
+                ),
             )
         else:
             message_text = 'Password errata'
@@ -83,28 +72,27 @@ class DeleteAccountDialog(CancelAndHelpDialog):
         answer = step_context.result
 
         session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
-        if isinstance(answer, str):
-            if answer == 'Si':
-                result = DatabaseInterface.delete_account(session_account)
-                if result == True:
-                    session_account.email = None
-                    session_account.firstName = None
-                    session_account.lastName = None
-                    session_account.starredBook = None
-                    message_text = "**Cancellazione eseguita con successo.**"
-                else:
-                    message_text = "Errore nella cancellazione dell'account, riprova."
-
-                prompt_message = MessageFactory.text(
-                    message_text, message_text, InputHints.ignoring_input
-                )
-                await step_context.prompt(TextPrompt.__name__, PromptOptions(prompt=prompt_message))
+        if answer.index == 0:
+            result = DatabaseInterface.delete_account(session_account)
+            if result == True:
+                session_account.email = None
+                session_account.firstName = None
+                session_account.lastName = None
+                session_account.starredBook = None
+                message_text = "**Cancellazione eseguita con successo.**"
             else:
-                message_text = 'Operazione annullata'
-                prompt_message = MessageFactory.text(
-                    message_text, message_text, InputHints.ignoring_input
-                )
-                await step_context.prompt(TextPrompt.__name__, PromptOptions(prompt=prompt_message))
-                return await step_context.end_dialog()
+                message_text = "Errore nella cancellazione dell'account, riprova."
+
+            prompt_message = MessageFactory.text(
+                message_text, message_text, InputHints.ignoring_input
+            )
+            await step_context.prompt(TextPrompt.__name__, PromptOptions(prompt=prompt_message))
+        elif answer.index == 1:
+            message_text = 'Operazione annullata'
+            prompt_message = MessageFactory.text(
+                message_text, message_text, InputHints.ignoring_input
+            )
+            await step_context.prompt(TextPrompt.__name__, PromptOptions(prompt=prompt_message))
+            return await step_context.end_dialog()
 
         return await step_context.end_dialog()
