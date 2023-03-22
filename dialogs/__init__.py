@@ -2,10 +2,13 @@
 # Licensed under the MIT License.
 
 from .cancel_and_help_dialog import CancelAndHelpDialog
-from .date_resolver_dialog import DateResolverDialog
-from .main_dialog import MainDialog
-from .search_book_dialog import BookDialog
 from .login_dialog import LoginDialog
+from .logout_dialog import LogoutDialog
+from .main_dialog import MainDialog
 from .registration_dialog import RegistrationDialog
+from .remove_starred_book_dialog import RemoveStarredBookDialog
+from .search_book_dialog import BookDialog
+from .starred_book_dialog import StarredBookDialog
 
-__all__ = ["BookDialog", "CancelAndHelpDialog", "DateResolverDialog", "MainDialog", "LoginDialog","RegistrationDialog"]
+__all__ = ["BookDialog", "CancelAndHelpDialog", "MainDialog", "LoginDialog", "RegistrationDialog", "StarredBookDialog",
+           "LogoutDialog", "RemoveStarredBookDialog"]

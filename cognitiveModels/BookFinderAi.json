@@ -1,0 +1,279 @@
+{
+  "luis_schema_version": "7.0.0",
+  "intents": [
+    {
+      "name": "Annulla",
+      "features": []
+    },
+    {
+      "name": "CercaLibro",
+      "features": []
+    },
+    {
+      "name": "LibriPiuCercati",
+      "features": []
+    },
+    {
+      "name": "Login",
+      "features": []
+    },
+    {
+      "name": "Logout",
+      "features": []
+    },
+    {
+      "name": "None",
+      "features": []
+    },
+    {
+      "name": "Preferiti",
+      "features": []
+    },
+    {
+      "name": "Registrazione",
+      "features": []
+    },
+    {
+      "name": "RimuoviPreferiti",
+      "features": []
+    }
+  ],
+  "entities": [],
+  "hierarchicals": [],
+  "composites": [],
+  "closedLists": [],
+  "prebuiltEntities": [],
+  "utterances": [
+    {
+      "text": "annulla",
+      "intent": "Annulla",
+      "entities": []
+    },
+    {
+      "text": "annulla operazione",
+      "intent": "Annulla",
+      "entities": []
+    },
+    {
+      "text": "autenticami",
+      "intent": "Login",
+      "entities": []
+    },
+    {
+      "text": "cerca",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "cerca libro",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "classifica libri",
+      "intent": "LibriPiuCercati",
+      "entities": []
+    },
+    {
+      "text": "come mi autentico",
+      "intent": "Login",
+      "entities": []
+    },
+    {
+      "text": "come mi iscrivo",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "come mi registro",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "devo autenticarmi",
+      "intent": "Login",
+      "entities": []
+    },
+    {
+      "text": "devo cercare un libro",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "devo eseguire il login",
+      "intent": "Login",
+      "entities": []
+    },
+    {
+      "text": "devo registrarmi",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "disconessione",
+      "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "disconetti",
+      "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "dove trovo i miei preferiti",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "elimina accesso",
+      "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "elimina libro",
+      "intent": "RimuoviPreferiti",
+      "entities": []
+    },
+    {
+      "text": "elimina preferiti",
+      "intent": "RimuoviPreferiti",
+      "entities": []
+    },
+    {
+      "text": "elimina preferito",
+      "intent": "RimuoviPreferiti",
+      "entities": []
+    },
+    {
+      "text": "esci",
+      "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "i miei libri",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "i miei libri preferiti",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "i miei preferiti",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "iscriviti",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "iscrizione",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "lascia stare",
+      "intent": "Annulla",
+      "entities": []
+    },
+    {
+      "text": "libri piu cercati",
+      "intent": "LibriPiuCercati",
+      "entities": []
+    },
+    {
+      "text": "login",
+      "intent": "Login",
+      "entities": []
+    },
+    {
+      "text": "logout",
+      "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "ok",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "preferiti",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "quali sono i libri più cercati",
+      "intent": "LibriPiuCercati",
+      "entities": []
+    },
+    {
+      "text": "registrati",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "registrazione",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "rimuovi libro",
+      "intent": "RimuoviPreferiti",
+      "entities": []
+    },
+    {
+      "text": "rimuovi preferiti",
+      "intent": "RimuoviPreferiti",
+      "entities": []
+    },
+    {
+      "text": "rimuovi un libro dai preferiti",
+      "intent": "RimuoviPreferiti",
+      "entities": []
+    },
+    {
+      "text": "sparati",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "termina operazione",
+      "intent": "Annulla",
+      "entities": []
+    },
+    {
+      "text": "trova",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "trovami un libro",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "vorrei registrarmi",
+      "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "vorrei trovare un libro",
+      "intent": "CercaLibro",
+      "entities": []
+    }
+  ],
+  "versionId": "0.1",
+  "name": "BookFinderAi",
+  "desc": "",
+  "culture": "it-it",
+  "tokenizerVersion": "1.0.0",
+  "patternAnyEntities": [],
+  "regex_entities": [],
+  "phraselists": [],
+  "regex_features": [],
+  "patterns": [],
+  "settings": []
+}

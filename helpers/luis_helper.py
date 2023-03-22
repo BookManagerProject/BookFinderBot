@@ -17,6 +17,9 @@ class Intent(Enum):
     NONE_INTENT = "NoneIntent"
     PREFERITI = "Preferiti"
     REGISTRAZIONE = "Registrazione"
+    LOGOUT = "Logout"
+    CLASSIFICA = "LibriPiuCercati"
+    ELIMINAPREFERITI = "RimuoviPreferiti"
 
 
 def top_intent(intents: Dict[Intent, dict]) -> TopIntent:
@@ -55,7 +58,7 @@ class LuisHelper:
                 else None
             )
 
-            if intent == Intent.CERCA_LIBRO.value:
+            if intent == Intent.CERCA_LIBRO.value or intent == Intent.PREFERITI.value or intent == Intent.ELIMINAPREFERITI.value:
                 result = BookSearchDetail()
             elif intent == Intent.LOGIN.value:
                 result = UserInfo()

@@ -31,7 +31,7 @@ class CancelAndHelpDialog(ComponentDialog):
                     cancel_message_text, cancel_message_text, InputHints.ignoring_input
                 )
 
-                if text in ("annulla", "chiudi", "ciao"):
+                if text in ("annulla", "chiudi", "esci dalla conversazione", "esci"):
                     await inner_dc.context.send_activity(cancel_message)
                     return await inner_dc.cancel_all_dialogs()
 

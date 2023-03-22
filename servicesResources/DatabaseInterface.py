@@ -206,8 +206,24 @@ class DatabaseInterface:
                         if not DatabaseInterface._addBook(book):
                             return False
                     cursor.execute(
-                                "INSERT INTO bookStarred([isbn],[email]) VALUES (?,?)",
-                                book.isbn, user.email)
+                        "INSERT INTO bookStarred([isbn],[email]) VALUES (?,?)",
+                        book.isbn, user.email)
+                    return True
+        except:
+            traceback.print_exc()
+            return False
+
+    @staticmethod
+    def removeStarredBook(user: UserInfo, book: BookDetail):
+        try:
+            with pyodbc.connect(DatabaseInterface.CONNECTIONSTRING) as conn:
+                with conn.cursor() as cursor:
+                    if not DatabaseInterface._checkBookIsExist(book):
+                        if not DatabaseInterface._addBook(book):
+                            return False
+                    cursor.execute(
+                        "DELETE FROM bookStarred WHERE isbn = ? and email = ?",
+                        book.isbn, user.email)
                     return True
         except:
             traceback.print_exc()
