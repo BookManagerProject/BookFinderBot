@@ -244,3 +244,17 @@ class DatabaseInterface:
         except:
             traceback.print_exc()
             return False
+
+    @staticmethod
+    def checkIfUserExist(email):
+        try:
+            with pyodbc.connect(DatabaseInterface.CONNECTIONSTRING) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute("SELECT * from users where users.email = ?", email)
+                    row = cursor.fetchall()
+                    if len(row) == 0:
+                        return False
+                    return True
+        except:
+            traceback.print_exc()
+            return False
