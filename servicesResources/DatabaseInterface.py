@@ -214,7 +214,7 @@ class DatabaseInterface:
             return False
 
     @staticmethod
-    def removeStarredBook(user: UserInfo, book: BookDetail):
+    def removeStarredBook(user: UserInfo, book: BookDetail) -> bool:
         try:
             with pyodbc.connect(DatabaseInterface.CONNECTIONSTRING) as conn:
                 with conn.cursor() as cursor:
@@ -224,6 +224,22 @@ class DatabaseInterface:
                     cursor.execute(
                         "DELETE FROM bookStarred WHERE isbn = ? and email = ?",
                         book.isbn, user.email)
+                    return True
+        except:
+            traceback.print_exc()
+            return False
+
+    @staticmethod
+    def delete_account(user: UserInfo):
+        try:
+            with pyodbc.connect(DatabaseInterface.CONNECTIONSTRING) as conn:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        "DELETE FROM bookStarred WHERE email = ?",
+                        user.email)
+                    cursor.execute(
+                        "DELETE FROM users WHERE email = ?",
+                        user.email)
                     return True
         except:
             traceback.print_exc()

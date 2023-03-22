@@ -25,8 +25,7 @@ from adapter_with_error_handler import AdapterWithErrorHandler
 from bots import DialogAndWelcomeBot
 from config import DefaultConfig
 from conversation_recognizer import ConversationRecognizer
-from dialogs import MainDialog, BookDialog, LoginDialog, RegistrationDialog, StarredBookDialog, LogoutDialog, \
-    RemoveStarredBookDialog
+from dialogs import *
 
 CONFIG = DefaultConfig()
 
@@ -50,9 +49,11 @@ LOGIN_DIALOG = LoginDialog(USER_STATE)
 REGISTRAZIONE_DIALOG = RegistrationDialog(USER_STATE)
 STARRED_BOOK_DIALOG = StarredBookDialog(USER_STATE)
 LOGOUT_DIALOG = LogoutDialog(USER_STATE)
+DELETE_DIALOG = DeleteAccountDialog(USER_STATE)
+HELPDIALOG = HelpDialog()
 REMOVESTARREDBOOK_DIALOG = RemoveStarredBookDialog(USER_STATE)
 DIALOG = MainDialog(USER_STATE, RECOGNIZER, BOOK_DIALOG, LOGIN_DIALOG, REGISTRAZIONE_DIALOG, STARRED_BOOK_DIALOG,
-                    LOGOUT_DIALOG, REMOVESTARREDBOOK_DIALOG)
+                    LOGOUT_DIALOG, REMOVESTARREDBOOK_DIALOG, DELETE_DIALOG, HELPDIALOG)
 BOT = DialogAndWelcomeBot(CONVERSATION_STATE, USER_STATE, DIALOG)
 
 

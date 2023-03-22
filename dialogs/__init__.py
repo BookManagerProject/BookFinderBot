@@ -2,6 +2,8 @@
 # Licensed under the MIT License.
 
 from .cancel_and_help_dialog import CancelAndHelpDialog
+from .delete_account_dialog import DeleteAccountDialog
+from .help_dialog import HelpDialog
 from .login_dialog import LoginDialog
 from .logout_dialog import LogoutDialog
 from .main_dialog import MainDialog
@@ -11,4 +13,4 @@ from .search_book_dialog import BookDialog
 from .starred_book_dialog import StarredBookDialog
 
 __all__ = ["BookDialog", "CancelAndHelpDialog", "MainDialog", "LoginDialog", "RegistrationDialog", "StarredBookDialog",
-           "LogoutDialog", "RemoveStarredBookDialog"]
+           "LogoutDialog", "RemoveStarredBookDialog", "DeleteAccountDialog", "HelpDialog"]

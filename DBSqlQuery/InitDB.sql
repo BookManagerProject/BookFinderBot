@@ -3,36 +3,40 @@ DROP TABLE IF EXISTS bookStarred;
 DROP TABLE IF EXISTS book;
 DROP TABLE IF EXISTS users;
 
-CREATE TABLE users(
-	email varchar(255) NOT NULL,
-	pwd varchar(255) NOT NULL,
-	firstName varchar(255),
-	lastName varchar(255),
-	PRIMARY KEY (email)
+CREATE TABLE users
+(
+    email     varchar(255) NOT NULL,
+    pwd       varchar(255) NOT NULL,
+    firstName varchar(255),
+    lastName  varchar(255),
+    PRIMARY KEY (email)
 )
 
-CREATE TABLE book(
-                     isbn          varchar(255) NOT NULL,
-                     title         varchar(255) NOT NULL,
-                     publishedDate date,
-                     description   text,
-                     image         varchar(255),
-                     PRIMARY KEY (isbn)
+CREATE TABLE book
+(
+    isbn          varchar(255) NOT NULL,
+    title         varchar(255) NOT NULL,
+    publishedDate date,
+    description   text,
+    image         varchar(255),
+    PRIMARY KEY (isbn)
 )
 
-CREATE TABLE bookStarred(
-	isbn varchar(255) NOT NULL,
-	email varchar(255) NOT NULL,
-	PRIMARY KEY (isbn,email),
-	FOREIGN KEY (email) REFERENCES [dbo].[users](email),
-	FOREIGN KEY (isbn) REFERENCES [dbo].[book](isbn)
+CREATE TABLE bookStarred
+(
+    isbn  varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
+    PRIMARY KEY (isbn, email),
+    FOREIGN KEY (email) REFERENCES [dbo].[users] (email),
+    FOREIGN KEY (isbn) REFERENCES [dbo].[book] (isbn)
 )
 
-CREATE TABLE searchedBook(
-    isbn varchar(255) NOT NULL,
+CREATE TABLE searchedBook
+(
+    isbn    varchar(255) NOT NULL,
     counter int default 1,
     primary key (isbn),
-    FOREIGN KEY (isbn) REFERENCES [dbo].[book](isbn)
+    FOREIGN KEY (isbn) REFERENCES [dbo].[book] (isbn)
 )
 
 --SELECT counter from book,searchedBook

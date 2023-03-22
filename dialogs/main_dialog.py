@@ -14,6 +14,8 @@ from botbuilder.schema import InputHints
 from conversation_recognizer import ConversationRecognizer
 from helpers.luis_helper import LuisHelper, Intent
 from user_info import UserInfo
+from .delete_account_dialog import DeleteAccountDialog
+from .help_dialog import HelpDialog
 from .login_dialog import LoginDialog
 from .logout_dialog import LogoutDialog
 from .registration_dialog import RegistrationDialog
@@ -26,7 +28,8 @@ class MainDialog(ComponentDialog):
     def __init__(
             self, user_state: UserState, luis_recognizer: ConversationRecognizer, book_dialog: BookDialog,
             login_dialog: LoginDialog, registrazione_dialog: RegistrationDialog, starred_book_dialog: StarredBookDialog,
-            logout_dialog: LogoutDialog, removed_starred_book_dialog: RemoveStarredBookDialog
+            logout_dialog: LogoutDialog, removed_starred_book_dialog: RemoveStarredBookDialog,
+            delete_dialog: DeleteAccountDialog, help_dialog: HelpDialog
     ):
         super(MainDialog, self).__init__(MainDialog.__name__)
 
@@ -37,6 +40,8 @@ class MainDialog(ComponentDialog):
         self._starred_book_dialog_id = starred_book_dialog.id
         self._remove_starred_book_dialog_id = removed_starred_book_dialog.id
         self._logout_dialog_id = logout_dialog.id
+        self._help_dialog_id = help_dialog.id
+        self._delete_account_dialog_id = delete_dialog.id
         self.add_dialog(TextPrompt(TextPrompt.__name__))
         self.add_dialog(book_dialog)
         self.add_dialog(login_dialog)
@@ -44,6 +49,8 @@ class MainDialog(ComponentDialog):
         self.add_dialog(starred_book_dialog)
         self.add_dialog(logout_dialog)
         self.add_dialog(removed_starred_book_dialog)
+        self.add_dialog(delete_dialog)
+        self.add_dialog(help_dialog)
         self.add_dialog(
             WaterfallDialog(
                 "WFDialog", [self.intro_step, self.act_step, self.final_step]
@@ -145,7 +152,11 @@ class MainDialog(ComponentDialog):
                 )
                 await step_context.context.send_activity(message)
         elif intent == Intent.WELCOME.value:
-            return await step_context.replace_dialog(self.id, None)
+            return await step_context.replace_dialog(self.id)
+        elif intent == Intent.HELP.value:
+            return await step_context.begin_dialog(self._help_dialog_id, luis_result)
+        elif intent == Intent.DELETE_ACCOUNT.value:
+            return await step_context.begin_dialog(self._delete_account_dialog_id, luis_result)
         else:
             didnt_understand_text = (
                 "Scusa ma non ho capito, perfavore ripova"
@@ -160,5 +171,3 @@ class MainDialog(ComponentDialog):
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         prompt_message = "C'è altro che posso fare per te?"
         return await step_context.replace_dialog(self.id, prompt_message)
-
-

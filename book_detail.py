@@ -2,6 +2,7 @@
 # Licensed under the MIT License.
 import string
 
+
 class BookDetail:
     def __init__(
             self,

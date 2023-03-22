@@ -21,6 +21,8 @@ class Intent(Enum):
     CLASSIFICA = "LibriPiuCercati"
     ELIMINAPREFERITI = "RimuoviPreferiti"
     WELCOME = 'Welcome'
+    DELETE_ACCOUNT = "DeleteAccount"
+    HELP = "Help"
 
 
 def top_intent(intents: Dict[Intent, dict]) -> TopIntent:
@@ -61,9 +63,7 @@ class LuisHelper:
 
             if intent == Intent.CERCA_LIBRO.value or intent == Intent.PREFERITI.value or intent == Intent.ELIMINAPREFERITI.value:
                 result = BookSearchDetail()
-            elif intent == Intent.LOGIN.value:
-                result = UserInfo()
-            elif intent == Intent.REGISTRAZIONE.value:
+            elif intent == Intent.LOGIN.value or intent == Intent.REGISTRAZIONE.value or intent == Intent.DELETE_ACCOUNT.value:
                 result = UserInfo()
 
         except Exception as exception:

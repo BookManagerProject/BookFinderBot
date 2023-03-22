@@ -13,6 +13,7 @@ class CercaLibro:
     '''
     Cerca il libro in base al nome o all'isbn
     '''
+
     def get_book_by_name(self, book_name):
         query = f"{book_name} libro+site:unilibro.it"
         params = {"q": query, "textDecorations": True, "textFormat": "HTML", 'setLang': 'it-IT', 'mkt': 'it-IT'}

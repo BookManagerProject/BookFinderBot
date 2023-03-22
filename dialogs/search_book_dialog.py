@@ -147,7 +147,7 @@ class BookDialog(CancelAndHelpDialog):
                 message = "Ho trovato i seguenti libri: \n\n"
                 i = 1
                 for result in results:
-                    message += str(i) + " - " + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
+                    message += str(i) + "." + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
                     i += 1
                 message += "\n\n Indicami scrivendomi il numero, quale libro stavi cercando"
                 self.index = len(results) + 1
@@ -181,11 +181,11 @@ class BookDialog(CancelAndHelpDialog):
             except:
                 date = datetime.date(int(pd), 1, 1)
             datestring = str(date.day) + "/" + str(date.month) + "/" + str(date.year)
-            message = "Ecco le info del libro\n\nTitolo: " + book["title"]
+            message = "Ecco le info del libro\n\n**Titolo:** " + book["title"]
             if book["description"] != "":
-                message += "\n\nDescrizione: " + book["description"]
-            message += "\n\nData di pubblicazione: " + datestring
-            message += "\n\nAutore/i: " + book["autori"]
+                message += "\n\n**Descrizione:** " + book["description"]
+            message += "\n\n**Data di pubblicazione:** " + datestring
+            message += "\n\n**Autore/i:** " + book["autori"]
             image_url = book["previewLink"]
             image_content = request.urlopen(image_url).read()
             image_data = BytesIO(image_content)
@@ -234,7 +234,7 @@ class BookDialog(CancelAndHelpDialog):
                 ),
             )
         elif session_account.email is None and book_detail.books is not None and book_detail.index is not None:
-            message_text = "Dato che non sei loggato non puoi aggiungere il libro ai preferiti poichè non sei loggato"
+            message_text = "Dato che **non sei loggato** non puoi aggiungere il libro ai preferiti"
             prompt_message = MessageFactory.text(message_text, message_text, InputHints.expecting_input)
             await step_context.context.send_activity(prompt_message)
         return await step_context.next(step_context.options)

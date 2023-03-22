@@ -3,10 +3,10 @@ from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurn
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
 from botbuilder.schema import InputHints
 
+from Utility.DatabaseUtility import DatabaseUtility
 from dialogs import CancelAndHelpDialog
-from user_info import UserInfo
-from Utility.DatabaseUtility import  DatabaseUtility
 from servicesResources.DatabaseInterface import DatabaseInterface
+from user_info import UserInfo
 
 
 class LoginDialog(CancelAndHelpDialog):
@@ -84,7 +84,7 @@ class LoginDialog(CancelAndHelpDialog):
             session_account.email = account_info.email
             session_account.firstName = account_info.firstName
             session_account.lastName = account_info.lastName
-            session_account.starredBook= account_info.starredBook
+            session_account.starredBook = account_info.starredBook
             message = f'Benvenuto {session_account.firstName} {session_account.lastName}'
             prompt_message = MessageFactory.text(
                 message, message, InputHints.expecting_input

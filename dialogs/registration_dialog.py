@@ -1,14 +1,11 @@
 from botbuilder.core import MessageFactory, UserState
-from botbuilder.dialogs import (
-    ComponentDialog
-)
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
 from botbuilder.schema import InputHints
 
+from Utility.DatabaseUtility import DatabaseUtility
 from dialogs import CancelAndHelpDialog
 from servicesResources.DatabaseInterface import DatabaseInterface
-from Utility.DatabaseUtility import DatabaseUtility
 from user_info import UserInfo
 
 
@@ -116,7 +113,8 @@ class RegistrationDialog(CancelAndHelpDialog):
     async def final_step(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         account_info = step_context.options
         hashed_pwd = DatabaseUtility.get_hashed_pwd(account_info.password)
-        result = DatabaseInterface.insert_user(account_info.email, account_info.firstName, account_info.lastName, hashed_pwd)
+        result = DatabaseInterface.insert_user(account_info.email, account_info.firstName, account_info.lastName,
+                                               hashed_pwd)
         if result == True:
             session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
             session_account.email = account_info.email
