@@ -32,7 +32,6 @@ class AdapterWithErrorHandler(BotFrameworkAdapter):
 
             # Send a message to the user
             await context.send_activity("É stato rilevato un errore, perfavore riprova")
-            await context.send_activity(traceback.format_exc())
             # Send a trace activity if we're talking to the Bot Framework Emulator
             if context.activity.channel_id == "emulator":
                 # Create a trace activity that contains the error object
