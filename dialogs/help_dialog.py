@@ -1,9 +1,9 @@
-from botbuilder.core import MessageFactory
+from botbuilder.core import MessageFactory, CardFactory
 from botbuilder.dialogs import (
     ComponentDialog
 )
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
-from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
+from botbuilder.dialogs.prompts import TextPrompt
 from botbuilder.schema import InputHints, HeroCard, CardAction, ActionTypes
 
 
@@ -16,7 +16,7 @@ class HelpDialog(ComponentDialog):
             WaterfallDialog(
                 WaterfallDialog.__name__,
                 [
-                    self.help_step,
+                    self.help_step
                 ],
             )
         )
@@ -33,9 +33,9 @@ class HelpDialog(ComponentDialog):
         prompt_message = MessageFactory.text(
             message_text, message_text, InputHints.ignoring_input
         )
-        await step_context.prompt(
+        '''await step_context.prompt(
             TextPrompt.__name__, PromptOptions(prompt=prompt_message)
-        )
+        )'''
 
         card = HeroCard(title='Per comodità clicca la funzionalità che desideri', buttons=[
             CardAction(
@@ -76,6 +76,6 @@ class HelpDialog(ComponentDialog):
         ],
                         )
 
-        # message = MessageFactory.attachment(CardFactory.hero_card(card))
-        # await step_context.context.send_activity(message)
-        return await step_context.end_dialog()
+        message = MessageFactory.attachment(CardFactory.hero_card(card))
+        await step_context.context.send_activity(message)
+        return await step_context.end_dialog(step_context.options)
