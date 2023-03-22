@@ -79,7 +79,7 @@ class DeleteAccountDialog(CancelAndHelpDialog):
                 session_account.firstName = None
                 session_account.lastName = None
                 session_account.starredBook = None
-                message_text = "**Cancellazione eseguita con successo.**"
+                message_text = "Cancellazione eseguita con successo."
             else:
                 message_text = "Errore nella cancellazione dell'account, riprova."
 
