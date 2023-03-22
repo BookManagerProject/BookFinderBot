@@ -57,26 +57,37 @@ class RemoveStarredBookDialog(CancelAndHelpDialog):
                     )
                 ),
             )
-
-    async def second(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
-        index = step_context.result.index
-        book_detail = step_context.options
-        if DatabaseInterface.removeStarredBook(session_account, book_detail.books[index]):
-            session_account.starredBook.pop(index)
-            message_text = (
-                "Libro rimosso con successo!"
-            )
-            message = MessageFactory.text(
-                message_text, message_text, InputHints.ignoring_input
-            )
-            await step_context.context.send_activity(message)
         else:
             message_text = (
-                "Errore durante l'eliminazione, riprova"
+                "Non hai libri preferiti, cercane qualcuno e aggiungili ai prferiti"
             )
             message = MessageFactory.text(
                 message_text, message_text, InputHints.ignoring_input
             )
             await step_context.context.send_activity(message)
-        return await step_context.next(book_detail.books)
+        return await step_context.next(None)
+
+    async def second(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        if step_context.result is not None:
+            session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
+            index = step_context.result.index
+            book_detail = step_context.options
+            if DatabaseInterface.removeStarredBook(session_account, book_detail.books[index]):
+                session_account.starredBook.pop(index)
+                message_text = (
+                    "Libro rimosso con successo!"
+                )
+                message = MessageFactory.text(
+                    message_text, message_text, InputHints.ignoring_input
+                )
+                await step_context.context.send_activity(message)
+            else:
+                message_text = (
+                    "Errore durante l'eliminazione, riprova"
+                )
+                message = MessageFactory.text(
+                    message_text, message_text, InputHints.ignoring_input
+                )
+                await step_context.context.send_activity(message)
+            return await step_context.next(book_detail.books)
+        return await step_context.next(None)

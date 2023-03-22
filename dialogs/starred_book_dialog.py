@@ -8,7 +8,7 @@ from botbuilder.dialogs import (
 )
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
 from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
-from botbuilder.schema import Attachment
+from botbuilder.schema import Attachment, InputHints
 
 from Utility.GoogleBooksAPI import GoogleBooksAPI
 from dialogs import CancelAndHelpDialog
@@ -60,6 +60,15 @@ class StarredBookDialog(CancelAndHelpDialog):
                     )
                 ),
             )
+        else:
+            message_text = (
+                "Non hai libri preferiti, cercane qualcuno e aggiungili ai prferiti"
+            )
+            message = MessageFactory.text(
+                message_text, message_text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(message)
+        return await step_context.next(None)
 
     async def _printBook(self, book, step_context):
         if book is not False:
@@ -92,7 +101,9 @@ class StarredBookDialog(CancelAndHelpDialog):
             await step_context.context.send_activity(message_with_image)
 
     async def second(self, step_context: WaterfallStepContext) -> DialogTurnResult:
-        index = step_context.result.index
-        book_detail = step_context.options
-        await self._printBook(book_detail.books[index], step_context)
-        return await step_context.next(book_detail.books)
+        if step_context.result is not None:
+            index = step_context.result.index
+            book_detail = step_context.options
+            await self._printBook(book_detail.books[index], step_context)
+            return await step_context.next(book_detail.books)
+        return await step_context.next(None)
