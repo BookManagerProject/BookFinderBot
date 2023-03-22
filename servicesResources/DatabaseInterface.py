@@ -161,16 +161,23 @@ class DatabaseInterface:
             with pyodbc.connect(DatabaseInterface.CONNECTIONSTRING) as conn:
                 with conn.cursor() as cursor:
                     pd = str(book.publishedDate).replace("('", "").replace("',)", "")
+                    description = str(book.description).replace("('", "").replace("',)", "")
+                    image = str(book.image).replace("('", "").replace("',)", "")
                     try:
-                        description = str(book.description).replace("('", "").replace("',)", "")
                         datesplit = pd.split("T")[0].split("-")
                         date = datetime.date(int(datesplit[0]), int(datesplit[1]), int(datesplit[2]))
                     except:
                         date = datetime.date(int(pd), 1, 1)
-                    cursor.execute(
-                        "INSERT INTO book([isbn],[title],[publishedDate],[description],[image]) VALUES (?,?,?,?,?)",
-                        book.isbn,
-                        book.title, date, description, book.image)
+                    if description == "":
+                        cursor.execute(
+                            "INSERT INTO book([isbn],[title],[publishedDate],[image]) VALUES (?,?,?,?)",
+                            book.isbn,
+                            book.title, date, image)
+                    else:
+                        cursor.execute(
+                            "INSERT INTO book([isbn],[title],[publishedDate],[description],[image]) VALUES (?,?,?,?,?)",
+                            book.isbn,
+                            book.title, date, description, image)
                     return True
         except:
             traceback.print_exc()

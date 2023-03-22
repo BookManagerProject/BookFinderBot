@@ -12,12 +12,12 @@ CREATE TABLE users(
 )
 
 CREATE TABLE book(
-    isbn varchar(255),
-    title varchar(255),
-    publishedDate date,
-    description text,
-    image varchar(255),
-    PRIMARY KEY (isbn)
+                     isbn          varchar(255) NOT NULL,
+                     title         varchar(255) NOT NULL,
+                     publishedDate date,
+                     description   text,
+                     image         varchar(255),
+                     PRIMARY KEY (isbn)
 )
 
 CREATE TABLE bookStarred(

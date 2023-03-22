@@ -2,7 +2,6 @@
 # Licensed under the MIT License.
 import string
 
-
 class BookDetail:
     def __init__(
             self,
@@ -11,7 +10,7 @@ class BookDetail:
             publishedDate: string,
             description: string,
             image: string,
-            autori: string
+            autori: string = None
     ):
         self.isbn = str(isbn)
         self.title = str(tile)

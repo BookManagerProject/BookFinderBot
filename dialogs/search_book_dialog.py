@@ -4,10 +4,10 @@ from urllib import request
 
 from botbuilder.core import MessageFactory, UserState
 from botbuilder.dialogs import (
-    Choice, PromptValidatorContext, NumberPrompt, AttachmentPrompt
+    Choice, PromptValidatorContext, NumberPrompt, AttachmentPrompt, ChoicePrompt
 )
 from botbuilder.dialogs import WaterfallDialog, WaterfallStepContext, DialogTurnResult
-from botbuilder.dialogs.prompts import ConfirmPrompt, TextPrompt, PromptOptions
+from botbuilder.dialogs.prompts import TextPrompt, PromptOptions
 from botbuilder.schema import InputHints, Attachment
 
 from Utility.BookParser import BookParser
@@ -29,11 +29,12 @@ class BookDialog(CancelAndHelpDialog):
         self.user_profile_accessor = user_state.create_property("UserInfo")
 
         self.add_dialog(TextPrompt(TextPrompt.__name__))
-        self.add_dialog(ConfirmPrompt(ConfirmPrompt.__name__))
+        self.add_dialog(ChoicePrompt(ChoicePrompt.__name__))
         self.add_dialog(
             WaterfallDialog(
                 WaterfallDialog.__name__,
                 [
+                    self.zero,
                     self.first,
                     self.second,
                     self.three,
@@ -47,12 +48,30 @@ class BookDialog(CancelAndHelpDialog):
         )
         self.add_dialog(
             AttachmentPrompt(
-                AttachmentPrompt.__name__
+                AttachmentPrompt.__name__, self.picture_prompt_validator
             )
         )
         self.api = GoogleBooksAPI()
         self.initial_dialog_id = WaterfallDialog.__name__
         self.index = 1
+
+    @staticmethod
+    async def picture_prompt_validator(prompt_context: PromptValidatorContext) -> bool:
+        if not prompt_context.recognized.succeeded:
+            return False
+
+        attachments = prompt_context.recognized.value
+
+        valid_images = [
+            attachment
+            for attachment in attachments
+            if attachment.content_type in ["image/jpeg", "image/png"]
+        ]
+
+        prompt_context.recognized.value = valid_images
+
+        # If none of the attachments are valid images, the retry prompt should be sent.
+        return len(valid_images) > 0
 
     async def book_index_validator(self, prompt_context: PromptValidatorContext) -> bool:
         # This condition is our validation rule. You can also change the value at this point.
@@ -61,11 +80,27 @@ class BookDialog(CancelAndHelpDialog):
                 and 0 < prompt_context.recognized.value < int(self.index)
         )
 
-    async def first(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+    async def zero(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options
         book_detail.titleorisbn = step_context.result
         if book_detail.titleorisbn is None:
-            message_text = "Certo! Dimmi il nome o l'isbn del libro da cercare oppure scatta una foto"
+            message_text = "Certo! Vuoi cercare il libro tramite foto o tramite ricerca testuale?"
+            return await step_context.prompt(
+                ChoicePrompt.__name__,
+                PromptOptions(
+                    prompt=MessageFactory.text(message_text),
+                    choices=[Choice("Foto"), Choice("Testo")],
+                ),
+            )
+            return await step_context.prompt(
+                TextPrompt.__name__, prompt_message
+            )
+        return await step_context.next(book_detail.titleorisbn)
+
+    async def first(self, step_context: WaterfallStepContext) -> DialogTurnResult:
+        choice = step_context.result
+        if choice.index == 1:
+            message_text = "Certo! Dimmi il nome o l'isbn del libro da cercare"
             prompt_message = PromptOptions(
                 prompt=MessageFactory.text(
                     message_text, InputHints.expecting_input
@@ -74,7 +109,19 @@ class BookDialog(CancelAndHelpDialog):
             return await step_context.prompt(
                 TextPrompt.__name__, prompt_message
             )
-        return await step_context.next(book_detail.titleorisbn)
+        elif choice.index == 0:
+            message_text = "Certo! Scatta pure la foto all'isbn del libro"
+            prompt_message = PromptOptions(
+                prompt=MessageFactory.text(
+                    message_text, InputHints.expecting_input
+                ),
+                retry_prompt=MessageFactory.text(
+                    "Immagine non valida, riprova"
+                )
+            )
+            return await step_context.prompt(
+                AttachmentPrompt.__name__, prompt_message
+            )
 
     async def second(self, step_context: WaterfallStepContext) -> DialogTurnResult:
         book_detail = step_context.options
@@ -100,9 +147,9 @@ class BookDialog(CancelAndHelpDialog):
                 message = "Ho trovato i seguenti libri: \n\n"
                 i = 1
                 for result in results:
-                    message += str(i) + "- " + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
+                    message += str(i) + " - " + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
                     i += 1
-                message += "\n Indicami scrivendomi il numero, quale libro stavi cercando"
+                message += "\n\n Indicami scrivendomi il numero, quale libro stavi cercando"
                 self.index = len(results) + 1
                 book_detail.books = results
                 return await step_context.prompt(
@@ -180,7 +227,7 @@ class BookDialog(CancelAndHelpDialog):
                 "Vuoi aggiungerlo ai preferiti?"
             )
             return await step_context.prompt(
-                ConfirmPrompt.__name__,
+                ChoicePrompt.__name__,
                 PromptOptions(
                     prompt=MessageFactory.text(message_text),
                     choices=[Choice("Si"), Choice("No")],
@@ -197,7 +244,7 @@ class BookDialog(CancelAndHelpDialog):
         session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
         if book_detail.books is not None and book_detail.index is not None and session_account.email is not None:
             result = step_context.result
-            if result:
+            if result.index == 0:
                 if session_account.checkIfBookIsStarred(book_detail.book):
                     message_text = (
                         "Il libro è già presente tra i tuoi preferiti!"
@@ -211,7 +258,7 @@ class BookDialog(CancelAndHelpDialog):
                     message_text = (
                         "Si è verificato un errore durante l'aggiunta. Riprova!"
                     )
-            else:
+            elif result.index == 1:
                 message_text = (
                     "Non aggiunto!"
                 )
