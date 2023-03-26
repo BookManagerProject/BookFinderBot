@@ -73,7 +73,7 @@ class StarredBookDialog(CancelAndHelpDialog):
     async def _printBook(self, book, step_context):
         if book is not False:
             pd = str(book.publishedDate).replace("(datetime.date(", "").replace("),)", "").replace("',)", "").replace(
-                "(", "")
+                "(", "").replace("'", "")
             try:
                 datesplit = pd.split(",")
                 date = datetime.date(int(datesplit[0]), int(datesplit[1]), int(datesplit[2]))

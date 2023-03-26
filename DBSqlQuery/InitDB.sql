@@ -19,7 +19,8 @@ CREATE TABLE book
     publishedDate date,
     description   text,
     image         varchar(255),
-    PRIMARY KEY (isbn)
+    autori varchar(255)
+        PRIMARY KEY (isbn)
 )
 
 CREATE TABLE bookStarred

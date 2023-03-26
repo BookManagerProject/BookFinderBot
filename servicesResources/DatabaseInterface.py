@@ -20,10 +20,9 @@ class DatabaseInterface:
     SEARCH_USER_BY_EMAIL = "SELECT email FROM dbo.users WHERE [email] = ?"
     INSERT_USER = "INSERT INTO dbo.users([email],[pwd],[firstName],[lastName]) VALUES (?,?,?,?)"
     GET_PASSWORD = "SELECT pwd FROM dbo.users WHERE [email] = ?"
-    FIND_STARRED_BOOK = "SELECT book.isbn,title,publishedDate,description,image from book,users,bookStarred where users.email = ? and users.email = bookStarred.email and book.isbn = bookStarred.isbn"
+    FIND_STARRED_BOOK = "SELECT book.isbn,title,publishedDate,description,image,autori from book,users,bookStarred where users.email = ? and users.email = bookStarred.email and book.isbn = bookStarred.isbn"
     GET_COUNTER_SEARCHED_BOOK = "SELECT counter from book,searchedBook where book.isbn = ? and book.isbn = searchedBook.isbn"
     GET_BOOK = "SELECT isbn,title,publishedDate,description,image from book where book.isbn = ?"
-
     # =========QUERY SQL===================
 
     @staticmethod
@@ -69,6 +68,8 @@ class DatabaseInterface:
                     firstName = row[0][1]
                     lastName = row[0][2]
                     libri = DatabaseInterface._getStarredBook(email)
+                    if libri is False:
+                        libri = None
                     user = UserInfo(email=email, firstName=firstName, lastName=lastName, starredBook=libri)
                     return user
         except:
@@ -86,7 +87,7 @@ class DatabaseInterface:
                         return []
                     libri = []
                     for row in rows:
-                        libro = BookDetail(row[0], row[1], row[2], row[3], row[4])
+                        libro = BookDetail(row[0], row[1], row[2], row[3], row[4], row[5])
                         libri.append(libro)
                     return libri
         except:
@@ -170,14 +171,14 @@ class DatabaseInterface:
                         date = datetime.date(int(pd), 1, 1)
                     if description == "":
                         cursor.execute(
-                            "INSERT INTO book([isbn],[title],[publishedDate],[image]) VALUES (?,?,?,?)",
+                            "INSERT INTO book([isbn],[title],[publishedDate],[image],[autori]) VALUES (?,?,?,?,?)",
                             book.isbn,
-                            book.title, date, image)
+                            book.title, date, image, book.autori)
                     else:
                         cursor.execute(
-                            "INSERT INTO book([isbn],[title],[publishedDate],[description],[image]) VALUES (?,?,?,?,?)",
+                            "INSERT INTO book([isbn],[title],[publishedDate],[description],[image],[autori]) VALUES (?,?,?,?,?,?)",
                             book.isbn,
-                            book.title, date, description, image)
+                            book.title, date, description, image, book.autori)
                     return True
         except:
             traceback.print_exc()

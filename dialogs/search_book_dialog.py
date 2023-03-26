@@ -147,7 +147,7 @@ class BookDialog(CancelAndHelpDialog):
                 message = "Ho trovato i seguenti libri: \n\n"
                 i = 1
                 for result in results:
-                    message += str(i) + "." + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
+                    message += str(i) + ". " + result["title"] + " (" + result["isbn"] + ")" + "\n\n"
                     i += 1
                 message += "\n\n\nIndicami scrivendomi il numero, quale libro stavi cercando"
                 self.index = len(results) + 1
@@ -174,7 +174,7 @@ class BookDialog(CancelAndHelpDialog):
 
     async def _printBook(self, book, step_context):
         if book is not False:
-            pd = str(book["publishedDate"]).replace("('", "").replace("',)", "")
+            pd = str(book["publishedDate"]).replace("('", "").replace("',)", "").replace("'", "")
             try:
                 datesplit = pd.split("T")[0].split("-")
                 date = datetime.date(int(datesplit[0]), int(datesplit[1]), int(datesplit[2]))
