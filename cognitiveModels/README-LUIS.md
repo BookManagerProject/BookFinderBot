@@ -54,7 +54,7 @@ ___
 ### 1. Import the local LUIS application to luis.ai
 
 ```bash
-luis import application --region "LuisAppAuthoringRegion" --authoringKey "LuisAuthoringKey" --appName "FlightBooking" --in "./cognitiveModels/FlightBooking.json"
+luis import application --region "LuisAppAuthoringRegion" --authoringKey "LuisAuthoringKey" --appName "BookFinder" --in "./cognitiveModels/BookFinderAi.json"
 ```
 
 Outputs the following JSON:
@@ -62,7 +62,7 @@ Outputs the following JSON:
 ```json
 {
     "id": "########-####-####-####-############",
-    "name": "FlightBooking",
+    "name": "BookFinder",
     "description": "A LUIS model that uses intent and entities.",
     "culture": "en-us",
     "usageScenario": "",
@@ -72,7 +72,7 @@ Outputs the following JSON:
     "endpoints": {},
     "endpointHitsCount": 0,
     "activeVersion": "0.1",
-    "ownerEmail": "bot@contoso.com",
+    "ownerEmail": "bot@bot.com",
     "tokenizerVersion": "1.0.0"
 }
 ```
