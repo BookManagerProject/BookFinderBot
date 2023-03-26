@@ -4,6 +4,7 @@
 
 BookFinderBot è un un bot Telegram. Gli utenti attraverso di esso potranno cercare comodamente tramite foto o testo i
 propri libri e aggiungerli ai preferiti.
+* **
 
 ## 🚀 Installazione del servizio
 
@@ -150,14 +151,16 @@ Per LUIS è possibile fare riferimento al file [REDME-LUIS.md](cognitiveModels/R
 10. Utilizzare l'API di Azure SQL per connettersi al database e interagire con i dati. Per esempio, si può utilizzare
     una libreria per Python come pyodbc o SQLAlchemy.
 
-## Installazione
+* **
+
+## 🧠 Installazione 🧠
 
 Il progetto contiene tutto il necessario per il funzionamento
 
 Per utilizzare basta clonare il progetto con git:
 
 ```
-git clone XX
+git clone https://github.com/BookManagerProject/BookFinderBot.git
 ```
 
 Installare le dipendenze con il seguente comando:
@@ -165,4 +168,8 @@ Installare le dipendenze con il seguente comando:
 ```
 pip install -r requirments.txt
 ```
+
+Utilizzare una qualsiasi IDE per lo sviluppo e test (Si consiglia PyCharm)
+
+Configurare il file [config.py](config.py) con le costanti presenti in esso
 
