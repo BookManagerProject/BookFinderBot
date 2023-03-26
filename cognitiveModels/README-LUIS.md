@@ -121,7 +121,7 @@ To see how to create an LUIS Cognitive Service Resource in Azure, please see [th
 Resource should be used when you want to move your bot to production. The instructions will show you how to create and
 pair the resource with a LUIS Application.
 
-[README-LUIS]: ./README-LUIS.md
+[README-LUIS]: README-LUIS.md
 
 ___
 
