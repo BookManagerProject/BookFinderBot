@@ -16,7 +16,6 @@ from book_detail import BookDetail
 from dialogs import CancelAndHelpDialog
 from servicesResources.CognitiveService import ComputerVision
 from servicesResources.DatabaseInterface import DatabaseInterface
-from servicesResources.VoiceService import SpeechToTextConverter
 from user_info import UserInfo
 
 
@@ -133,9 +132,6 @@ class BookDialog(CancelAndHelpDialog):
                 if "image" in resultcontext[0].content_type:
                     cerca = ComputerVision()
                     results = cerca.get_text_from_img(resultcontext[0].content_url)
-                elif "audio" in resultcontext[0].content_type:
-                    cerca = SpeechToTextConverter()
-                    text = cerca.recognize_from_url(resultcontext[0].content_url)
         else:
             book_detail.titleorisbn = step_context.result
             if BookParser.is_valid_isbn(book_detail.titleorisbn):

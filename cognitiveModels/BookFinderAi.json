@@ -10,6 +10,14 @@
       "features": []
     },
     {
+      "name": "DeleteAccount",
+      "features": []
+    },
+    {
+      "name": "Help",
+      "features": []
+    },
+    {
       "name": "LibriPiuCercati",
       "features": []
     },
@@ -36,6 +44,10 @@
     {
       "name": "RimuoviPreferiti",
       "features": []
+    },
+    {
+      "name": "Welcome",
+      "features": []
     }
   ],
   "entities": [],
@@ -44,6 +56,16 @@
   "closedLists": [],
   "prebuiltEntities": [],
   "utterances": [
+    {
+      "text": "a",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "aiuto",
+      "intent": "Help",
+      "entities": []
+    },
     {
       "text": "annulla",
       "intent": "Annulla",
@@ -60,7 +82,32 @@
       "entities": []
     },
     {
+      "text": "c",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "cancella i miei dati",
+      "intent": "DeleteAccount",
+      "entities": []
+    },
+    {
+      "text": "cancro",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "cerca",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "cerca libr",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "cerca libri",
       "intent": "CercaLibro",
       "entities": []
     },
@@ -70,8 +117,18 @@
       "entities": []
     },
     {
+      "text": "ciao",
+      "intent": "Welcome",
+      "entities": []
+    },
+    {
       "text": "classifica libri",
       "intent": "LibriPiuCercati",
+      "entities": []
+    },
+    {
+      "text": "come funzione",
+      "intent": "Help",
       "entities": []
     },
     {
@@ -87,6 +144,26 @@
     {
       "text": "come mi registro",
       "intent": "Registrazione",
+      "entities": []
+    },
+    {
+      "text": "come posso cancellare l'account",
+      "intent": "DeleteAccount",
+      "entities": []
+    },
+    {
+      "text": "come si usa",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "come va",
+      "intent": "Welcome",
+      "entities": []
+    },
+    {
+      "text": "d",
+      "intent": "None",
       "entities": []
     },
     {
@@ -125,8 +202,18 @@
       "entities": []
     },
     {
+      "text": "e",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "elimina accesso",
       "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "elimina account",
+      "intent": "DeleteAccount",
       "entities": []
     },
     {
@@ -145,8 +232,58 @@
       "entities": []
     },
     {
+      "text": "elimina profilo",
+      "intent": "DeleteAccount",
+      "entities": []
+    },
+    {
+      "text": "eliminami",
+      "intent": "DeleteAccount",
+      "entities": []
+    },
+    {
+      "text": "eliminiami",
+      "intent": "DeleteAccount",
+      "entities": []
+    },
+    {
       "text": "esci",
       "intent": "Logout",
+      "entities": []
+    },
+    {
+      "text": "f",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "find",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "find book",
+      "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "g",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "h",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "help",
+      "intent": "Help",
+      "entities": []
+    },
+    {
+      "text": "i",
+      "intent": "None",
       "entities": []
     },
     {
@@ -175,6 +312,11 @@
       "entities": []
     },
     {
+      "text": "l",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "lascia stare",
       "intent": "Annulla",
       "entities": []
@@ -195,8 +337,48 @@
       "entities": []
     },
     {
+      "text": "lol",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "m",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "n",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "no",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "ok",
       "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "p",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "pre",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "prefer",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "preferit",
+      "intent": "Preferiti",
       "entities": []
     },
     {
@@ -205,8 +387,23 @@
       "entities": []
     },
     {
+      "text": "prefetiti",
+      "intent": "Preferiti",
+      "entities": []
+    },
+    {
+      "text": "q",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "quali sono i libri più cercati",
       "intent": "LibriPiuCercati",
+      "entities": []
+    },
+    {
+      "text": "r",
+      "intent": "None",
       "entities": []
     },
     {
@@ -230,12 +427,27 @@
       "entities": []
     },
     {
+      "text": "rimuovi profilo",
+      "intent": "DeleteAccount",
+      "entities": []
+    },
+    {
       "text": "rimuovi un libro dai preferiti",
       "intent": "RimuoviPreferiti",
       "entities": []
     },
     {
+      "text": "s",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "sparati",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "t",
       "intent": "None",
       "entities": []
     },
@@ -255,6 +467,16 @@
       "entities": []
     },
     {
+      "text": "u",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "v",
+      "intent": "None",
+      "entities": []
+    },
+    {
       "text": "vorrei registrarmi",
       "intent": "Registrazione",
       "entities": []
@@ -262,6 +484,16 @@
     {
       "text": "vorrei trovare un libro",
       "intent": "CercaLibro",
+      "entities": []
+    },
+    {
+      "text": "w",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "x",
+      "intent": "None",
       "entities": []
     }
   ],

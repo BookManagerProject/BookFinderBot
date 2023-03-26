@@ -35,7 +35,7 @@ class DeleteAccountDialog(CancelAndHelpDialog):
         session_account = await self.user_profile_accessor.get(step_context.context, UserInfo)
 
         if session_account.email is not None:
-            message = "Inserisci la password per l'account " + session_account.email + " per procedere alla cancellazione."
+            message = "Inserisci la password per l'account " + session_account.email + " per procedere alla cancellazione. Oppure scrivi annulla per annullare la procedura"
             prompt_message = MessageFactory.text(
                 message, message, InputHints.expecting_input
             )
