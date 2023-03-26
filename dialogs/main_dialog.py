@@ -139,7 +139,13 @@ class MainDialog(ComponentDialog):
                 )
                 await step_context.context.send_activity(message)
         elif intent == Intent.CLASSIFICA.value:
-            print("wip")
+            text = (
+                "Da questo sito https://bookfinderspring-bookfinderspring.azuremicroservices.io/ puoi consultare la classifica dei libri più cercati e i libri che più utenti hanno messo nei preferiti"
+            )
+            message = MessageFactory.text(
+                text, text, InputHints.ignoring_input
+            )
+            await step_context.context.send_activity(message)
         elif intent == Intent.ELIMINAPREFERITI.value:
             if session_account.email is not None:
                 return await step_context.begin_dialog(self._remove_starred_book_dialog_id, luis_result)
