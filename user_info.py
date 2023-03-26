@@ -13,7 +13,8 @@ class UserInfo:
         return f"{self.email} {self.firstName} {self.lastName} {self.starredBook}"
 
     def checkIfBookIsStarred(self, book: BookDetail):
-        for booklist in self.starredBook:
-            if booklist.isbn == book.isbn:
-                return True
+        if self.starredBook is not None:
+            for booklist in self.starredBook:
+                if booklist.isbn == book.isbn:
+                    return True
         return False

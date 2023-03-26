@@ -11,6 +11,7 @@ from msrest.authentication import CognitiveServicesCredentials
 from Utility.BookParser import BookParser
 from Utility.GoogleBooksAPI import GoogleBooksAPI
 from config import DefaultConfig
+from servicesResources.BingSearchService import CercaLibro
 
 
 class ComputerVision:
@@ -57,12 +58,22 @@ class ComputerVision:
         list = BookParser.find_isbns(text)
         results = []
         api = GoogleBooksAPI()
+        bing = CercaLibro()
         if len(list) > 0:
             for element in list:
                 results.append(api.search_by_isbn(element))
         else:
             if self._is_word_or_sentence(text):
-                results = api.search_by_title(text)
+                search = api.search_by_title(text)
+                if search is not None:
+                    for book in search:
+                        results.append(book)
+                list = bing.get_book_by_name(text)
+                for element in list:
+                    search = api.search_by_title(element)
+                    if search is not None:
+                        for book in search:
+                            results.append(book)
             else:
                 results = []
 
