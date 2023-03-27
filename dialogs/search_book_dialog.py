@@ -182,6 +182,7 @@ class BookDialog(CancelAndHelpDialog):
                 message += "\n\nDescrizione: " + book["description"]
             message += "\n\nData di pubblicazione: " + datestring
             message += "\n\nAutore/i: " + book["autori"]
+            message = message.replace('\\')
             image_url = book["previewLink"]
             image_content = request.urlopen(image_url).read()
             image_data = BytesIO(image_content)
