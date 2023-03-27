@@ -149,7 +149,8 @@ Per LUIS è possibile fare riferimento al file [REDME-LUIS.md](cognitiveModels/R
 9. Creare tabelle e altri oggetti del database all'interno del nuovo database, utilizzando uno strumento di gestione del
    database o una query SQL.
 10. Utilizzare l'API di Azure SQL per connettersi al database e interagire con i dati. Per esempio, si può utilizzare
-    una libreria per Python come pyodbc o SQLAlchemy.
+    una libreria per Python come pyodbc.
+11. Caricare il file [InitDB.sql](DBSqlQuery/InitDB.sql) su Azure SQL
 
 * **
 
