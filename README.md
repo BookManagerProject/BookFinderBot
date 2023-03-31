@@ -83,7 +83,7 @@ risorse. Ora si è pronti alla creazione delle risorse necessarie al progetto.
 7. Per utilizzare GitHub Actions, è necessario configurare il repository dell'applicazione per il rilascio continuo su
    Azure. Ciò può essere fatto seguendo i passaggi descritti nella documentazione di Azure.
 8. Una volta caricata l'applicazione Python, è necessario configurare il comando avvia specificando la
-   stringa ``gunicorn --bind 0.0.0.0 --worker-class aiohttp.worker.GunicornWebWorker --timeout 600 app:APP" nella sezione "Configurazione" -> "Comando avvia" dell'istanza di Web App``.
+   stringa ``gunicorn --bind 0.0.0.0 --worker-class aiohttp.worker.GunicornWebWorker --timeout 600 app:APP`` nella sezione "Configurazione" -> "Comando avvia" dell'istanza di Web App.
 9. Infine, per utilizzare l'applicazione Python su Web App, è possibile accedere all'URL pubblico dell'istanza di Web
    App attraverso un browser web o utilizzando un client HTTP. L'applicazione Python dovrebbe essere in grado di gestire
    le richieste HTTP in arrivo e fornire le risposte corrispondenti.
